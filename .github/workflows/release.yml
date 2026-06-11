@@ -1,0 +1,39 @@
+name: release
+
+# Tag-driven releases: `git tag vX.Y.Z && git push origin vX.Y.Z`.
+# GoReleaser builds cross-platform binaries, cuts the GitHub release, and updates
+# the Homebrew formula in buddyh/homebrew-tap.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write   # create the GitHub release on THIS repo
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history + tags so the changelog/version resolve
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          cache: true
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: '~> v2'
+          args: release --clean
+        env:
+          # GITHUB_TOKEN can create the release on this repo, but CANNOT push to
+          # the separate homebrew-tap repo — that needs a PAT with repo access.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}

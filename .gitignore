@@ -1,0 +1,21 @@
+# Compiled binary (built locally; do not commit)
+/seshy
+
+# Build / distribution output
+/dist/
+*.exe
+
+# Go test & coverage artifacts
+*.out
+*.test
+
+# Editor / OS junk
+.DS_Store
+*.swp
+*~
+
+# VHS screenshot output (regenerated; not committed)
+/tools/shots/
+
+# Internal handoff / scratch notes (kept locally, never published)
+/PROJECT_HANDOFF.md
