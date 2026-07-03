@@ -171,7 +171,7 @@ export function starfield(report, opts) {
 
   ${tiles}
   ${gradeBadge(W - PAD - 60, sigY + 18, m.grade)}
-  <text x="${PAD}" y="${sigY}" font-family="${DISPLAY}" font-size="33" font-weight="700" fill="${C.yellow}">${esc(m.sig.line1)}</text>
+  <text x="${PAD}" y="${sigY}" font-family="${DISPLAY}" font-size="${m.sig.line1.length > 42 ? 26 : 33}" font-weight="700" fill="${C.yellow}">${esc(m.sig.line1)}</text>
   <text x="${PAD}" y="${sigY + 42}" font-family="${LABEL}" font-size="26" fill="${C.lav}">${esc(m.sig.line2)}</text>
   ${footer(m.handle)}
   <rect width="${W}" height="${H}" fill="url(#vig)"/>
