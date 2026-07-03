@@ -1,0 +1,240 @@
+{
+  "alt": {
+    "actually": 1,
+    "capsRage": 0,
+    "doubleQ": 1,
+    "greenlights": 2,
+    "just": 1,
+    "shortOrders": 2,
+    "undo": 0,
+    "wait": 1,
+    "why": 2
+  },
+  "automation": {
+    "activeHours": 0.1,
+    "activeMs": 445000,
+    "firstTs": 1767607200000,
+    "headless": 0,
+    "headlessShare": 0,
+    "interactive": 3,
+    "lastTs": 1767776520000,
+    "prompts": 5,
+    "sessions": 3
+  },
+  "awards": {
+    "busiestDay": {
+      "day": "2026-01-05",
+      "msgs": 2
+    },
+    "byHour": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "longestSession": {
+      "cwd": "/tmp/proj-a",
+      "msgs": 2
+    },
+    "peakHour": 9,
+    "topProject": {
+      "msgs": 2,
+      "path": "/tmp/proj-a"
+    }
+  },
+  "deep": {
+    "clears": 0,
+    "commands": {
+      "/goal": 1,
+      "/help": 1
+    },
+    "commandsRun": 2,
+    "continueOnly": 1,
+    "distinctSkills": 0,
+    "editCalls": 1,
+    "errorRate": 50,
+    "gitCommits": 2,
+    "goals": 1,
+    "harness": {
+      "claude": 2,
+      "codex": 1,
+      "gemini": 2
+    },
+    "longestStreak": 3,
+    "models": {
+      "claude-fable-5": 2,
+      "gpt-5.4": 1
+    },
+    "modelsTried": 2,
+    "planMode": 0,
+    "problemFile": {
+      "edits": 1,
+      "path": "/tmp/proj-a/app.js"
+    },
+    "readWriteRatio": 0,
+    "reads": 0,
+    "scary": 1,
+    "skillsInvoked": 0,
+    "subagents": 0,
+    "thinkingShare": 0,
+    "thinkingWords": 0,
+    "toolErrors": 1,
+    "toolResults": 2,
+    "topCommand": {
+      "count": 1,
+      "name": "/goal"
+    },
+    "topModel": {
+      "id": "claude-fable-5",
+      "replies": 2
+    },
+    "topSkill": {
+      "count": 0,
+      "name": ""
+    },
+    "topTool": {
+      "count": 1,
+      "name": "Bash"
+    },
+    "webCalls": 0,
+    "weekendShare": 0
+  },
+  "grade": {
+    "letter": "F",
+    "parts": {
+      "cadence": 4,
+      "clarity": 3.8,
+      "friction": -12,
+      "leverage": 0,
+      "manners": 8,
+      "temper": -24
+    },
+    "score": 30,
+    "why": "good manners, short temper"
+  },
+  "harness": {
+    "claude": {
+      "activeHours": 0.1,
+      "activeMs": 300000,
+      "days": 1,
+      "firstTs": 1767607200000,
+      "headless": 0,
+      "headlessShare": 0,
+      "interactive": 1,
+      "lastTs": 1767607500000,
+      "prompts": 2,
+      "sessions": 1
+    },
+    "codex": {
+      "activeHours": 0,
+      "activeMs": 25000,
+      "days": 1,
+      "firstTs": 1767742205000,
+      "headless": 0,
+      "headlessShare": 0,
+      "interactive": 1,
+      "lastTs": 1767742230000,
+      "prompts": 1,
+      "sessions": 1
+    },
+    "gemini": {
+      "activeHours": 0,
+      "activeMs": 120000,
+      "days": 1,
+      "firstTs": 1767776400000,
+      "headless": 0,
+      "headlessShare": 0,
+      "interactive": 1,
+      "lastTs": 1767776520000,
+      "prompts": 2,
+      "sessions": 1
+    }
+  },
+  "machine": {
+    "bashCmds": 2,
+    "cacheRead": 1050,
+    "filesTouched": 1,
+    "linesWritten": 3,
+    "tokensIn": 320,
+    "tokensOut": 165,
+    "tokensTotal": 485,
+    "toolCalls": 3
+  },
+  "meta": {
+    "agent": "all",
+    "agents": [
+      "claude",
+      "codex",
+      "gemini"
+    ],
+    "filesScanned": 3,
+    "model": "",
+    "rookie": true,
+    "skippedLines": 1,
+    "statsVersion": 1,
+    "tool": "seshy-wrapped",
+    "window": "all"
+  },
+  "span": {
+    "days": 2,
+    "firstTs": 1767607200000,
+    "lastTs": 1767776520000
+  },
+  "tics": {
+    "absolutelyRight": 1,
+    "agentAdmitWrong": 0,
+    "agentSorry": 1,
+    "goodCatch": 1,
+    "iSeeIssue": 0,
+    "letMe": 1,
+    "perfect": 1,
+    "shouldWork": 1,
+    "youreRight": 1
+  },
+  "time": {
+    "activeDays": 3,
+    "activeHours": 0.1,
+    "activeMs": 445000,
+    "avgSessionMin": 2.5
+  },
+  "totals": {
+    "assistantWords": 19,
+    "interrupts": 1,
+    "projects": 2,
+    "prompts": 5,
+    "replies": 3,
+    "sessions": 3,
+    "userWords": 21
+  },
+  "you": {
+    "enthusiasm": 0,
+    "fbombs": 1,
+    "nightOwl": 0,
+    "oneMore": 1,
+    "please": 1,
+    "profanity": 0,
+    "sorry": 0,
+    "thanks": 1,
+    "youWrong": 1
+  }
+}

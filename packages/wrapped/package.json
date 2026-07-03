@@ -13,7 +13,7 @@
     "STATS.md"
   ],
   "scripts": {
-    "test": "node --test test/"
+    "test": "TZ=UTC node --test 'test/*.test.js'"
   },
   "engines": {
     "node": ">=20.0.0"

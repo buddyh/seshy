@@ -1,0 +1,6 @@
+{"type":"session_meta","timestamp":"2026-01-06T23:30:00.000Z","payload":{"cwd":"/tmp/proj-b","source":"cli","timestamp":"2026-01-06T23:30:00.000Z"}}
+{"type":"turn_context","timestamp":"2026-01-06T23:30:01.000Z","payload":{"cwd":"/tmp/proj-b","model":"gpt-5.4"}}
+{"type":"response_item","timestamp":"2026-01-06T23:30:05.000Z","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"wait, why?? just do it"}]}}
+{"type":"response_item","timestamp":"2026-01-06T23:30:20.000Z","payload":{"type":"function_call","name":"shell","arguments":"{\"command\":[\"bash\",\"-lc\",\"git commit -m x\"]}"}}
+{"type":"event_msg","timestamp":"2026-01-06T23:30:25.000Z","payload":{"type":"token_count","info":{"last_token_usage":{"input_tokens":200,"output_tokens":100,"cached_input_tokens":50}}}}
+{"type":"response_item","timestamp":"2026-01-06T23:30:30.000Z","payload":{"type":"message","role":"assistant","content":[{"type":"output_text","text":"Good catch. I apologize for the confusion."}]}}
