@@ -1,0 +1,11 @@
+{"type":"user","cwd":"/tmp/proj-a","timestamp":"2026-01-05T10:00:00.000Z","message":{"role":"user","content":"Fix the login bug, please. It's actually still broken. fuck"}}
+{"type":"assistant","cwd":"/tmp/proj-a","timestamp":"2026-01-05T10:00:30.000Z","message":{"id":"m1","model":"claude-fable-5","usage":{"input_tokens":100,"output_tokens":50,"cache_read_input_tokens":1000},"content":[{"type":"text","text":"You're absolutely right. Let me fix that."}]}}
+{"type":"assistant","cwd":"/tmp/proj-a","timestamp":"2026-01-05T10:01:00.000Z","message":{"id":"m2","model":"claude-fable-5","usage":{"input_tokens":10,"output_tokens":5,"cache_read_input_tokens":0},"content":[{"type":"tool_use","name":"Edit","input":{"file_path":"/tmp/proj-a/app.js","new_string":"line1\nline2\nline3"}}]}}
+{"type":"user","cwd":"/tmp/proj-a","timestamp":"2026-01-05T10:01:10.000Z","message":{"role":"user","content":[{"type":"tool_result","is_error":false,"content":"ok"}]}}
+{"type":"assistant","cwd":"/tmp/proj-a","timestamp":"2026-01-05T10:02:00.000Z","message":{"id":"m3","model":"claude-fable-5","usage":{"input_tokens":5,"output_tokens":5,"cache_read_input_tokens":0},"content":[{"type":"tool_use","name":"Bash","input":{"command":"git commit -m fix && rm -rf node_modules"}}]}}
+{"type":"user","cwd":"/tmp/proj-a","timestamp":"2026-01-05T10:02:05.000Z","message":{"role":"user","content":[{"type":"tool_result","is_error":true,"content":"boom"}]}}
+{"type":"user","cwd":"/tmp/proj-a","timestamp":"2026-01-05T10:03:00.000Z","message":{"role":"user","content":"continue"}}
+{"type":"assistant","cwd":"/tmp/proj-a","timestamp":"2026-01-05T10:03:30.000Z","message":{"id":"m4","model":"claude-fable-5","usage":{"input_tokens":5,"output_tokens":5,"cache_read_input_tokens":0},"content":[{"type":"text","text":"Perfect! That should work now."}]}}
+{"type":"user","cwd":"/tmp/proj-a","timestamp":"2026-01-05T10:04:00.000Z","message":{"role":"user","content":"<command-name>/goal</command-name><command-args>ship it</command-args>"}}
+{not json — a deliberately corrupt line with "type":"user" so the pre-filter lets it through
+{"type":"user","cwd":"/tmp/proj-a","timestamp":"2026-01-05T10:05:00.000Z","message":{"role":"user","content":"[Request interrupted by user]"}}
