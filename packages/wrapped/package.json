@@ -1,0 +1,40 @@
+{
+  "name": "seshy-wrapped",
+  "version": "0.1.0",
+  "description": "Your AI-coding life, on a card. 100% local — reads the session logs your coding agents already keep and renders shareable stat cards.",
+  "type": "module",
+  "bin": {
+    "seshy-wrapped": "bin/seshy-wrapped.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "STATS.md"
+  ],
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2"
+  },
+  "keywords": [
+    "claude-code",
+    "codex",
+    "gemini-cli",
+    "opencode",
+    "wrapped",
+    "stats",
+    "cli",
+    "seshy"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buddyh/seshy.git",
+    "directory": "packages/wrapped"
+  },
+  "license": "MIT"
+}
