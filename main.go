@@ -319,7 +319,7 @@ func main() {
 	}
 	configCmd.AddCommand(configSetCmd)
 
-	root.AddCommand(listCmd, summaryCmd, lastCmd, allCmd, sessionsCmd, searchCmd, configCmd)
+	root.AddCommand(listCmd, summaryCmd, lastCmd, allCmd, sessionsCmd, searchCmd, configCmd, wrappedCmd)
 	if err := root.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(1)
