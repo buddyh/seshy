@@ -40,8 +40,8 @@ function filterToModel(events, modelRe) {
 
 // collect(opts) -> canonical report object.
 // opts: { agent, since (ms|0), until (ms|0), model, window, concurrency, onProgress }
-export async function collect({ agent = 'all', since = 0, until = 0, model = '', window = 'all', concurrency = 16, onProgress } = {}) {
-  let files = discover(agent);
+export async function collect({ agent = 'all', since = 0, until = 0, model = '', window = 'all', concurrency = 16, home = undefined, onProgress } = {}) {
+  let files = discover(agent, home);
   if (since) files = files.filter((f) => (f.sessionMtime || f.mtime) >= since);
   // Deterministic processing order regardless of filesystem enumeration:
   // sort by path, then per-session id for sqlite-backed sources.
