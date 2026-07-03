@@ -1,0 +1,46 @@
+name: wrapped
+
+on:
+  push:
+    branches: [main, 'feat/**']
+    paths: ['packages/wrapped/**', 'wrapped.go', 'main.go', '.github/workflows/wrapped.yml']
+  pull_request:
+    paths: ['packages/wrapped/**', 'wrapped.go', 'main.go', '.github/workflows/wrapped.yml']
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/wrapped
+    strategy:
+      matrix:
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm install --no-fund --no-audit
+      - run: npm test
+      # Determinism gate: the full pipeline twice, diffed byte-for-byte.
+      - name: double-run stats diff
+        run: |
+          TZ=UTC node --input-type=module -e "
+            const { collect, stableStringify } = await import('./src/pipeline.js');
+            const home = 'test/fixtures/home';
+            const a = stableStringify(await collect({ agent: 'all', home }));
+            const b = stableStringify(await collect({ agent: 'all', home }));
+            if (a !== b) { console.error('stats.json differs between runs'); process.exit(1); }
+            console.log('byte-identical across runs');
+          "
+
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: go build ./...
+      - run: go vet ./...
