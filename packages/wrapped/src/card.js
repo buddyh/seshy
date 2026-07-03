@@ -143,7 +143,7 @@ function sunsetTheme(report, opts) {
     <text x="${W - PAD - 60}" y="${badgeCy + 100}" text-anchor="middle" font-family="${LABEL}" font-size="21" fill="${C.fog}" letter-spacing="2">DELEGATION GRADE</text>
     <text x="${W - PAD - 60}" y="${badgeCy + 126}" text-anchor="middle" font-family="${LABEL}" font-size="18" fill="${C.fog}" font-style="italic">${esc(m.grade.why)}</text>
 
-    <text x="${PAD}" y="${sigY}" font-family="${DISPLAY}" font-size="33" font-weight="700" fill="${C.yellow}">${esc(m.sig.line1)}</text>
+    <text x="${PAD}" y="${sigY}" font-family="${DISPLAY}" font-size="${m.sig.line1.length > 42 ? 26 : 33}" font-weight="700" fill="${C.yellow}">${esc(m.sig.line1)}</text>
     <text x="${PAD}" y="${sigY + 40}" font-family="${LABEL}" font-size="26" fill="${C.lav}">${esc(m.sig.line2)}</text>
 
     ${footer(m.handle)}
