@@ -32,25 +32,25 @@ const file = (agent, kind) => (p, extra = {}) => {
 };
 
 const SOURCES = {
-  claude: () => {
+  claude: (home) => {
     const mk = file('claude', 'jsonl');
-    return walk(path.join(HOME, '.claude', 'projects'), (n) => n.endsWith('.jsonl') && !n.startsWith('agent-')).map((p) => mk(p));
+    return walk(path.join(home, '.claude', 'projects'), (n) => n.endsWith('.jsonl') && !n.startsWith('agent-')).map((p) => mk(p));
   },
-  codex: () => {
+  codex: (home) => {
     const mk = file('codex', 'jsonl');
-    return walk(path.join(HOME, '.codex', 'sessions'), (n) => n.startsWith('rollout-') && n.endsWith('.jsonl')).map((p) => mk(p));
+    return walk(path.join(home, '.codex', 'sessions'), (n) => n.startsWith('rollout-') && n.endsWith('.jsonl')).map((p) => mk(p));
   },
   // Gemini CLI keeps one logs.json per project hash: a JSON array of typed
   // user messages. Assistant text is not recorded there, so gemini feeds the
   // human-side stats only.
-  gemini: () => {
+  gemini: (home) => {
     const mk = file('gemini', 'json-array');
-    return walk(path.join(HOME, '.gemini', 'tmp'), (n) => n === 'logs.json').map((p) => mk(p));
+    return walk(path.join(home, '.gemini', 'tmp'), (n) => n === 'logs.json').map((p) => mk(p));
   },
   // OpenCode keeps everything in one SQLite database. Each session row is one
   // logical "session file"; parse() reads its messages + text parts.
-  opencode: () => {
-    const db = path.join(HOME, '.local', 'share', 'opencode', 'opencode.db');
+  opencode: (home) => {
+    const db = path.join(home, '.local', 'share', 'opencode', 'opencode.db');
     if (!existsSync(db)) return [];
     let rows;
     try {
@@ -61,13 +61,13 @@ const SOURCES = {
     const mk = file('opencode', 'sqlite');
     return rows.map((r) => mk(db, { sessionId: r.id, sessionMtime: r.time_updated || 0 }));
   },
-  pi: () => {
+  pi: (home) => {
     const mk = file('pi', 'jsonl');
-    return walk(path.join(HOME, '.pi', 'agent', 'sessions'), (n) => n.endsWith('.jsonl')).map((p) => mk(p));
+    return walk(path.join(home, '.pi', 'agent', 'sessions'), (n) => n.endsWith('.jsonl')).map((p) => mk(p));
   },
-  droid: () => {
+  droid: (home) => {
     const mk = file('droid', 'jsonl');
-    return walk(path.join(HOME, '.factory', 'sessions'), (n) => n.endsWith('.jsonl')).map((p) => mk(p));
+    return walk(path.join(home, '.factory', 'sessions'), (n) => n.endsWith('.jsonl')).map((p) => mk(p));
   },
 };
 
@@ -94,14 +94,15 @@ export function requireSqlite() {
 
 export const KNOWN_AGENTS = Object.keys(SOURCES);
 
-// discover(agent) -> session entries. agent 'all' unions every source.
-export function discover(agent = 'all') {
+// discover(agent, home) -> session entries. agent 'all' unions every source.
+// home is injectable so tests can point at synthetic fixture trees.
+export function discover(agent = 'all', home = HOME) {
   const wanted = agent === 'all' ? KNOWN_AGENTS : [agent];
   const out = [];
   for (const a of wanted) {
     const src = SOURCES[a];
     if (!src) continue;
-    for (const f of src()) if (f) out.push(f);
+    for (const f of src(home)) if (f) out.push(f);
   }
   return out;
 }
