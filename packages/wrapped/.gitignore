@@ -1,0 +1,5 @@
+node_modules/
+seshy-wrapped/
+*.png
+!docs/*.png
+package-lock.json
