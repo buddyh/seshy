@@ -110,6 +110,8 @@ export async function main() {
     since: o.since,
     model: o.model,
     window: o.window,
+    // Demo/test hook: point discovery at a synthetic home tree.
+    home: process.env.SESHY_WRAPPED_HOME || undefined,
     onProgress: (done, total) => {
       if (!process.stderr.isTTY || o.json) return;
       const pctN = Math.floor((done / total) * 100);
