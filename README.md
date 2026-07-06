@@ -24,8 +24,10 @@ config when you want to hide headless runs.
 - Resume the **real** conversation via each agent's own native command — never a summary
 - Search the *contents* of every past session across every agent
 - Browse the most recent sessions across **every repo** on your machine
+- See every agent's retention policy — and stop the ones that silently delete your history
 - Scriptable: JSON out, with the exact resume command on every session
-- Read-only — it never modifies your history
+- Read-only on your sessions — it never touches history; `retention set`/`protect` edit
+  agent *settings* files only when you ask, with a `.bak` backup first
 
 > Website: **[seshy.dev](https://seshy.dev)** · Repo: **github.com/buddyh/seshy**
 
@@ -44,6 +46,9 @@ seshy reads sessions from seven coding agents and shows them in one unified list
 | Droid | Factory | `droid --resume <id>` |
 
 Each agent's session store is read natively, concurrently, and read-only.
+
+`seshy retention` covers three more stores (Gemini CLI, Cursor CLI, Copilot CLI) that
+don't have resume support yet.
 
 ## Install
 
@@ -89,6 +94,7 @@ seshy last [path]       # resume the most recent session in the directory
 seshy all               # most recent sessions across every repo (paged as you scroll)
 seshy sessions          # every session across all agents/repos as JSON (an index for tooling)
 seshy search <pattern>  # search session contents across agents (excerpt + resume per hit)
+seshy retention         # per-agent session stores, disk usage, and deletion policies
 seshy config            # show settings (and where they live)
 ```
 
@@ -118,6 +124,52 @@ when piped) for tooling.
 `seshy sessions` prints every discovered session across all agents and directories as JSON
 — path, agent, dir, mtime, id, and resume command — uncapped and **without** reading file
 contents. It's a fast index for search skills and pipelines. Scope it with `--agent`.
+
+### `seshy retention` — who is deleting your history
+
+Some agents keep every session forever. Two of them quietly don't: **Claude Code** and
+**Gemini CLI** both delete sessions older than **30 days by default**, on a sweep that
+runs at startup. `seshy retention` puts every agent's store, disk usage, and deletion
+policy in one table:
+
+```
+  AGENT     STORE                       SIZE  SESSIONS   OLDEST   POLICY
+  Claude    ~/.claude/projects        1.3 GB     5,797  29d ago   [!] auto-deletes after 30d (default)
+  Codex     ~/.codex/sessions         5.2 GB     2,203  9mo ago   keeps sessions forever
+  Gemini    ~/.gemini/tmp/*/chats     6.6 MB        32  7mo ago   [!] auto-deletes after 30d (default)
+  ...
+  [!] 2 agents delete old sessions. Keep a year of history: seshy retention protect
+```
+
+That `OLDEST` column is the tell: a store whose oldest session is 29 days old is a store
+being actively emptied. Ten agents are covered — the seven resumable ones plus Gemini CLI,
+Cursor CLI, and Copilot CLI.
+
+Fix the deleters, one agent at a time or in one shot:
+
+```sh
+seshy retention                      # the table above (-o json / ndjson for tooling)
+seshy retention set claude 365      # ~/.claude/settings.json  cleanupPeriodDays = 365
+seshy retention set claude off      # keep indefinitely (writes 99999; there is no off switch)
+seshy retention set gemini 365d     # ~/.gemini/settings.json  sessionRetention.maxAge
+seshy retention set gemini off      # sessionRetention.enabled = false
+seshy retention protect             # raise every auto-deleting agent to >= 365 days
+seshy retention protect --days 730 --yes
+```
+
+Safety, since these edit files owned by other tools:
+
+- Every write backs the file up to `<file>.bak` first, preserves unknown keys, and
+  refuses to touch a file that isn't valid JSON.
+- `protect` shows the exact before -> after edits and asks before writing (`--yes` to
+  skip; required when non-interactive).
+- seshy never writes `0` for Claude's `cleanupPeriodDays` — old versions treated it as
+  "never save sessions at all".
+- seshy reads/writes the user-level settings file; a project-level or managed policy can
+  still override it. Gemini durations: `d`/`h`/`w`/`m` — `m` is **months**, not minutes.
+- Droid's `sessionRetentionDays` governs Factory **cloud** copies; local files are never
+  deleted, so seshy reports it but doesn't manage it. Codex, Grok, pi, OpenCode,
+  Antigravity, Cursor, and Copilot keep everything with no retention setting to manage.
 
 ## Config
 
@@ -205,7 +257,9 @@ go build -o seshy .
 
 Requires Go 1.25+. The codebase lives in `internal/` — `agents/` (per-agent collectors and
 the resume model), `render/` (table/JSON/summary output), `tui/` (the Bubble Tea picker),
-`store/` (shared read helpers), and `config/` (settings).
+`retention/` (per-agent stores, policies, and the settings writers), `store/` (shared read
+helpers), and `config/` (settings). `go test ./...` runs the suite; the JSON contract for
+`retention -o json` is golden-tested (regenerate with `UPDATE_GOLDEN=1`).
 
 ## License
 
