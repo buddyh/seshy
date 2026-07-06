@@ -13,8 +13,13 @@ import (
 	_ "modernc.org/sqlite" // pure-Go sqlite driver
 )
 
-// Home returns the user's home directory (cached).
+// Home returns the user's home directory (cached). SESHY_HOME overrides it,
+// which lets demos and fixture-based tests point every agent store at a
+// synthetic home (the Go twin of the wrapped package's SESHY_WRAPPED_HOME).
 var Home = func() string {
+	if h := os.Getenv("SESHY_HOME"); h != "" {
+		return h
+	}
 	h, _ := os.UserHomeDir()
 	return h
 }()
