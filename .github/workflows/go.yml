@@ -1,0 +1,27 @@
+name: go
+
+on:
+  push:
+    branches: [main, 'feat/**']
+    paths: ['**.go', 'go.mod', 'go.sum', '.github/workflows/go.yml']
+  pull_request:
+    paths: ['**.go', 'go.mod', 'go.sum', '.github/workflows/go.yml']
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: go build ./...
+      - run: go vet ./...
+      - name: gofmt
+        run: |
+          files=$(gofmt -l . | grep -v '^packages/' || true)
+          if [ -n "$files" ]; then echo "gofmt needed on:"; echo "$files"; exit 1; fi
+      - run: go test ./...

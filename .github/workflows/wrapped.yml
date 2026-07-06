@@ -3,9 +3,9 @@ name: wrapped
 on:
   push:
     branches: [main, 'feat/**']
-    paths: ['packages/wrapped/**', 'wrapped.go', 'main.go', '.github/workflows/wrapped.yml']
+    paths: ['packages/wrapped/**', '.github/workflows/wrapped.yml']
   pull_request:
-    paths: ['packages/wrapped/**', 'wrapped.go', 'main.go', '.github/workflows/wrapped.yml']
+    paths: ['packages/wrapped/**', '.github/workflows/wrapped.yml']
 
 jobs:
   node:
@@ -34,13 +34,3 @@ jobs:
             if (a !== b) { console.error('stats.json differs between runs'); process.exit(1); }
             console.log('byte-identical across runs');
           "
-
-  go:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-      - run: go build ./...
-      - run: go vet ./...
