@@ -34,14 +34,19 @@ type Meta struct {
 }
 
 // Registry of agent display metadata. Order here is the canonical agent order.
+// gemini, cursor, and copilot have no session collectors yet — they appear on
+// retention-surface commands (store locations, disk usage, cleanup policies).
 var Metas = map[string]Meta{
 	"claude":   {"Claude", "#DE7356"},
 	"codex":    {"Codex", "#10A37F"},
+	"gemini":   {"Gemini", "#4796E3"},
 	"grok":     {"Grok", "#FFFFFF"},
 	"pi":       {"pi", "#BA3C3C"},
 	"opencode": {"OpenCode", "#ABA198"},
 	"agy":      {"agy", "#4285F4"},
 	"droid":    {"Droid", "#9766F0"},
+	"cursor":   {"Cursor", "#E5E5E5"},
+	"copilot":  {"Copilot", "#79C0FF"},
 }
 
 // Label returns the display label for a tool key (falls back to the key).
