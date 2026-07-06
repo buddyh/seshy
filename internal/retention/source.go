@@ -189,10 +189,11 @@ var Sources = []Source{
 		Key:     "cursor",
 		Display: func(h string) string { return filepath.Join(h, ".cursor", "chats") },
 		Roots: func(h string) []string {
-			return []string{
-				filepath.Join(h, ".cursor", "chats"),
-				filepath.Join(h, ".cursor", "projects"),
-			}
+			// projects/ holds lots of non-session state; measure only the
+			// per-project agent-transcripts dirs alongside the chat store.
+			roots := []string{filepath.Join(h, ".cursor", "chats")}
+			m, _ := filepath.Glob(filepath.Join(h, ".cursor", "projects", "*", "agent-transcripts"))
+			return append(roots, m...)
 		},
 		Inspect: keepForever("manual: delete chats from cursor-agent ls"),
 		Count:   countCursor,

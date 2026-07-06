@@ -123,8 +123,9 @@ func FixtureHome(t *testing.T) string {
 	// droid: one session
 	WriteAt(t, home, ".factory/sessions/-tmp-project/uuid-1.jsonl", 110, TMid)
 
-	// cursor: one chat dir
+	// cursor: one chat dir + one project agent transcript
 	WriteAt(t, home, ".cursor/chats/hashA/uuid-1/store.db", 70, TOld)
+	WriteAt(t, home, ".cursor/projects/proj-a/agent-transcripts/uuid-2.jsonl", 35, TMid)
 
 	// copilot: one current + one legacy session dir
 	WriteAt(t, home, ".copilot/session-state/uuid-1/events.jsonl", 60, TNew)

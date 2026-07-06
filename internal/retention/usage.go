@@ -138,8 +138,8 @@ func countAgy(home string) (int, time.Time) {
 	return countFiles(filepath.Join(home, ".gemini", "antigravity-cli", "conversations", "*.db"), nil)
 }
 
-// countCursor counts chat dirs (~/.cursor/chats/<workspace-hash>/<uuid>),
-// aging them by the files inside.
+// countCursor counts chat dirs (~/.cursor/chats/<workspace-hash>/<uuid>)
+// aged by the files inside, plus per-project agent transcripts.
 func countCursor(home string) (int, time.Time) {
 	var n int
 	var oldest time.Time
@@ -154,6 +154,11 @@ func countCursor(home string) (int, time.Time) {
 				oldest = min
 			}
 		}
+	}
+	tn, tmin := countFiles(filepath.Join(home, ".cursor", "projects", "*", "agent-transcripts", "*.jsonl"), nil)
+	n += tn
+	if !tmin.IsZero() && (oldest.IsZero() || tmin.Before(oldest)) {
+		oldest = tmin
 	}
 	return n, oldest
 }

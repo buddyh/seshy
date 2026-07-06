@@ -28,7 +28,7 @@ func TestReportFixture(t *testing.T) {
 		{"opencode", 2, "2025-08-01T12:00:00Z"}, // from time_created, not file mtime
 		{"agy", 1, "2026-06-20T18:45:00Z"},
 		{"droid", 1, "2026-01-15T09:30:00Z"},
-		{"cursor", 1, "2025-08-01T12:00:00Z"},
+		{"cursor", 2, "2025-08-01T12:00:00Z"}, // chat dir + project transcript
 		{"copilot", 2, "2025-08-01T12:00:00Z"}, // current + legacy store
 	}
 	for _, w := range want {
