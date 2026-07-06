@@ -52,6 +52,7 @@ function parseArgs(argv) {
     else if (a === '--open') o.open = true;
     else if (a === '--now') o.now = Date.parse(next()) || 0; // tests: pin the clock
     else if (a === '--help') o.help = true;
+    else o.unknown ||= a; // typo'd flags must not silently render a full card
   }
   return o;
 }
@@ -185,6 +186,7 @@ export async function main() {
 }
 
 function validate(o) {
+  if (o.unknown) return `Unknown option "${o.unknown}". Run with --help to see every flag.`;
   if (!['all', ...KNOWN_AGENTS].includes(o.agent)) return `Unknown agent "${o.agent}". Pick one of: ${KNOWN_AGENTS.join(', ')}, all.`;
   if (!CUTS.includes(o.cut)) return `Unknown cut "${o.cut}". Pick one of: ${CUTS.join(', ')}.`;
   const themes = ['sunset', 'terminal', 'starfield', 'receipt', 'billboard', 'crt'];

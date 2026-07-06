@@ -7,6 +7,7 @@ import assert from 'node:assert/strict';
 import path from 'node:path';
 import os from 'node:os';
 import { mkdtempSync, mkdirSync, rmSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { collect } from '../src/pipeline.js';
 import { parseSession } from '../src/parse.js';
@@ -96,4 +97,11 @@ test('gemini-only corpus renders a card (assistant stats simply absent)', async 
   assert.equal(r.totals.replies, 0);
   const svg = buildSVG(r, { cut: 'classic', theme: 'sunset' });
   assert.ok(svg.startsWith('<svg'));
+});
+
+test('unknown flags are rejected, not silently ignored', () => {
+  const bin = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'bin', 'seshy-wrapped.js');
+  const r = spawnSync(process.execPath, [bin, '--no-card'], { encoding: 'utf8' });
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /Unknown option "--no-card"/);
 });
