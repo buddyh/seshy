@@ -216,7 +216,9 @@ function printSummary(report, o) {
     [head.value, head.label],
     [fmt(t.sessions), `sessions across ${fmt(t.projects)} projects`],
     [`${Math.round(report.time.activeHours)}h`, 'agent hours on the clock'],
-    [fmt(report.automation.headless), `sessions ran headless (${report.automation.headlessShare}% automated)`],
+    // Headless runs sit outside the interactive session count above, so the
+    // line names its own universe — screenshot auditors will do the math.
+    [fmt(report.automation.headless), `headless runs alongside (${report.automation.headlessShare}% of all activity)`],
     [fmt(report.tics.youreRight), `"you're right"s pried out of it`],
     [fmt(report.you.fbombs), 'F-bombs dropped'],
     [fmt(report.you.nightOwl), 'prompts after midnight'],
