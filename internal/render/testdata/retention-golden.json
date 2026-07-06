@@ -1,0 +1,188 @@
+{
+  "format_version": "1.0",
+  "agents": [
+    {
+      "agent": "claude",
+      "disk_bytes": 350,
+      "installed": true,
+      "label": "Claude",
+      "oldest": "2025-08-01T12:00:00Z",
+      "policy": {
+        "at_risk": true,
+        "config_file": "~/.claude/settings.json",
+        "default": "30d",
+        "effective": "30d",
+        "kind": "auto-delete",
+        "note": "startup sweep also removes per-session plans, file history, and todos",
+        "settable": false,
+        "source": "default"
+      },
+      "sessions": 2,
+      "store": "~/.claude/projects"
+    },
+    {
+      "agent": "codex",
+      "disk_bytes": 300,
+      "installed": true,
+      "label": "Codex",
+      "oldest": "2026-01-15T09:30:00Z",
+      "policy": {
+        "at_risk": false,
+        "default": "forever",
+        "effective": "forever",
+        "kind": "keep-forever",
+        "note": "[history] in config.toml trims only history.jsonl, not sessions",
+        "settable": false,
+        "source": "default"
+      },
+      "sessions": 1,
+      "store": "~/.codex/sessions"
+    },
+    {
+      "agent": "gemini",
+      "disk_bytes": 150,
+      "installed": true,
+      "label": "Gemini",
+      "oldest": "2026-01-15T09:30:00Z",
+      "policy": {
+        "at_risk": true,
+        "config_file": "~/.gemini/settings.json",
+        "default": "30d",
+        "effective": "30d",
+        "kind": "auto-delete",
+        "note": "deletes each chat with its plans, tool outputs, and logs",
+        "settable": false,
+        "source": "default"
+      },
+      "sessions": 1,
+      "store": "~/.gemini/tmp/*/chats"
+    },
+    {
+      "agent": "grok",
+      "disk_bytes": 80,
+      "installed": true,
+      "label": "Grok",
+      "oldest": "2025-08-01T12:00:00Z",
+      "policy": {
+        "at_risk": false,
+        "default": "forever",
+        "effective": "forever",
+        "kind": "keep-forever",
+        "note": "manual: grok sessions delete \u003cid\u003e",
+        "settable": false,
+        "source": "default"
+      },
+      "sessions": 1,
+      "store": "~/.grok/sessions"
+    },
+    {
+      "agent": "pi",
+      "disk_bytes": 120,
+      "installed": true,
+      "label": "pi",
+      "oldest": "2026-01-15T09:30:00Z",
+      "policy": {
+        "at_risk": false,
+        "default": "forever",
+        "effective": "forever",
+        "kind": "keep-forever",
+        "note": "manual: delete from the /resume picker",
+        "settable": false,
+        "source": "default"
+      },
+      "sessions": 1,
+      "store": "~/.pi/agent/sessions"
+    },
+    {
+      "agent": "opencode",
+      "disk_bytes": 4096,
+      "installed": true,
+      "label": "OpenCode",
+      "oldest": "2025-08-01T12:00:00Z",
+      "policy": {
+        "at_risk": false,
+        "default": "forever",
+        "effective": "forever",
+        "kind": "keep-forever",
+        "note": "manual: opencode session delete \u003cid\u003e",
+        "settable": false,
+        "source": "default"
+      },
+      "sessions": 2,
+      "store": "~/.local/share/opencode"
+    },
+    {
+      "agent": "agy",
+      "disk_bytes": 90,
+      "installed": true,
+      "label": "agy",
+      "oldest": "2026-06-20T18:45:00Z",
+      "policy": {
+        "at_risk": false,
+        "default": "forever",
+        "effective": "forever",
+        "kind": "keep-forever",
+        "note": "manual: ctrl+delete in the /resume picker",
+        "settable": false,
+        "source": "default"
+      },
+      "sessions": 1,
+      "store": "~/.gemini/antigravity-cli"
+    },
+    {
+      "agent": "droid",
+      "disk_bytes": 110,
+      "installed": true,
+      "label": "Droid",
+      "oldest": "2026-01-15T09:30:00Z",
+      "policy": {
+        "at_risk": false,
+        "config_file": "~/.factory/settings.json",
+        "default": "forever",
+        "effective": "local: forever · cloud: Factory-managed",
+        "kind": "cloud-managed",
+        "note": "sessionRetentionDays governs Factory cloud copies only",
+        "settable": false,
+        "source": "default"
+      },
+      "sessions": 1,
+      "store": "~/.factory/sessions"
+    },
+    {
+      "agent": "cursor",
+      "disk_bytes": 105,
+      "installed": true,
+      "label": "Cursor",
+      "oldest": "2025-08-01T12:00:00Z",
+      "policy": {
+        "at_risk": false,
+        "default": "forever",
+        "effective": "forever",
+        "kind": "keep-forever",
+        "note": "manual: delete chats from cursor-agent ls",
+        "settable": false,
+        "source": "default"
+      },
+      "sessions": 2,
+      "store": "~/.cursor/chats"
+    },
+    {
+      "agent": "copilot",
+      "disk_bytes": 100,
+      "installed": true,
+      "label": "Copilot",
+      "oldest": "2025-08-01T12:00:00Z",
+      "policy": {
+        "at_risk": false,
+        "default": "forever",
+        "effective": "forever",
+        "kind": "keep-forever",
+        "note": "manual: /session prune --older-than DAYS",
+        "settable": false,
+        "source": "default"
+      },
+      "sessions": 2,
+      "store": "~/.copilot/session-state"
+    }
+  ]
+}
