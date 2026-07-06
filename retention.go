@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/buddyh/seshy/internal/render"
@@ -35,5 +36,33 @@ func newRetentionCmd() *cobra.Command {
 			return nil
 		},
 	}
+
+	setCmd := &cobra.Command{
+		Use:   "set <agent> <days|off>",
+		Short: "Change an agent's session retention (claude, gemini)",
+		Long: "Write the retention setting of an agent that auto-deletes sessions. " +
+			"claude: days or off (~/.claude/settings.json cleanupPeriodDays). " +
+			"gemini: a duration like 365d/52w/12m or off (~/.gemini/settings.json " +
+			"general.sessionRetention). The file is backed up to <file>.bak first.",
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ch, err := retention.Set(store.Home, args[0], args[1])
+			if err != nil {
+				return err
+			}
+			if err := ch.Apply(); err != nil {
+				return err
+			}
+			fmt.Printf("set %s %s: %s -> %s\n", ch.Agent, ch.Key, ch.Before, ch.After)
+			if ch.NewFile {
+				fmt.Printf("  %s (created)\n", ch.File)
+			} else {
+				fmt.Printf("  %s (backup: %s.bak)\n", ch.File, ch.File)
+			}
+			return nil
+		},
+	}
+
+	cmd.AddCommand(setCmd)
 	return cmd
 }

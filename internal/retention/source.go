@@ -54,12 +54,13 @@ type Source struct {
 // Change is one prepared edit to an agent's config file. Nothing touches
 // disk until Apply, which backs the file up to <file>.bak first.
 type Change struct {
-	Agent  string
-	File   string
-	Key    string // dotted key path, e.g. "general.sessionRetention.maxAge"
-	Before string // rendered current value, e.g. `30 (default, key unset)`
-	After  string
-	apply  func() error
+	Agent   string
+	File    string
+	Key     string // dotted key path, e.g. "general.sessionRetention.maxAge"
+	Before  string // rendered current value, e.g. `30d (default, key unset)`
+	After   string
+	NewFile bool // the config file does not exist yet; Apply creates it (no .bak)
+	apply   func() error
 }
 
 // Apply writes the prepared change to disk.
@@ -117,6 +118,7 @@ var Sources = []Source{
 		Config:  func(h string) string { return filepath.Join(h, ".claude", "settings.json") },
 		Inspect: inspectClaude,
 		Count:   countClaude,
+		Set:     setClaude,
 	},
 	{
 		// Rollouts are never auto-deleted (openai/codex#28187); [history]
@@ -139,6 +141,7 @@ var Sources = []Source{
 		Config:  func(h string) string { return filepath.Join(h, ".gemini", "settings.json") },
 		Inspect: inspectGemini,
 		Count:   countGemini,
+		Set:     setGemini,
 	},
 	{
 		// No retention config exists — docs.x.ai/build/settings/reference

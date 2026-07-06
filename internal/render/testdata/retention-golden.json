@@ -14,7 +14,7 @@
         "effective": "30d",
         "kind": "auto-delete",
         "note": "startup sweep also removes per-session plans, file history, and todos",
-        "settable": false,
+        "settable": true,
         "source": "default"
       },
       "sessions": 2,
@@ -51,7 +51,7 @@
         "effective": "30d",
         "kind": "auto-delete",
         "note": "deletes each chat with its plans, tool outputs, and logs",
-        "settable": false,
+        "settable": true,
         "source": "default"
       },
       "sessions": 1,
