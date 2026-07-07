@@ -11,24 +11,26 @@ your machine.**
 
 `seshy-wrapped` reads the session logs your coding agents already keep on
 disk — **Claude Code, Codex, Gemini CLI, OpenCode** (plus pi and Droid) — and
-renders a synthwave stat card: how many prompts you fired, how many lines of
-code it wrote for you, how many times you swore at it, how many times it
-caved and said *"you're right"*, your 3am prompt count, and a
-tongue-in-cheek **delegation grade**.
+renders a stat card: how many prompts you fired, how many lines of code it
+wrote for you, how many times you swore at it, how many times it caved and
+said *"you're right"*, your 3am prompt count, a **yearbook title** earned
+from your own numbers, and a tongue-in-cheek **delegation grade**.
 
 ![example card](docs/example.png)
 
 *(Example rendered from the synthetic test fixtures — run it yourself for
 your real numbers.)*
 
-## The hero move
+## Run it
 
 ```bash
-npx seshy-wrapped --model fable
+npx seshy-wrapped
 ```
 
-Filters to work answered by Fable 5 and retitles the card `FABLE 5 · 2026`.
-Works for any model: `--model opus-4-8`, `--model gpt-5.4`.
+Run bare and it asks what to wrap: **fable week** (Jul 1–7, Fable 5 only —
+the default), the **last 30 days**, or **all time**. Any scoping flag answers
+the question in advance — `--model opus-4-8`, `--since 2026-01-01`,
+`--period year`.
 
 ## Cuts and themes
 
@@ -48,7 +50,7 @@ npx seshy-wrapped --all-cuts --theme terminal     # every cut, terminal look
 | `chaos` | times you said "actually" |
 | `agent` | times it said "let me…" |
 
-Themes: `sunset` (default), `terminal`, `starfield`, `receipt`, `billboard`, `crt`.
+Themes: `dusk` (default — the launch film's road scene), `sunset`, `terminal`, `starfield`, `receipt`, `billboard`, `crt`.
 
 ## All options
 
@@ -58,7 +60,7 @@ Themes: `sunset` (default), `terminal`, `starfield`, `receipt`, `billboard`, `cr
     --since <date>    only sessions after YYYY-MM-DD
 -p, --period <win>    week | month | year | all
 -c, --cut <cut>       classic | machine | chaos | agent
--t, --theme <look>    sunset | terminal | starfield | receipt | billboard | crt
+-t, --theme <look>    dusk | sunset | terminal | starfield | receipt | billboard | crt
     --all-cuts        render every cut in the chosen theme
 -h, --handle <@you>   handle printed on the card
     --json            emit stats.json only
