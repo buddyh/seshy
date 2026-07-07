@@ -105,9 +105,9 @@ function scanlines(op = 0.05) {
 export function footer(handle) {
   return `
     <line x1="${PAD}" y1="${H - 96}" x2="${W - PAD}" y2="${H - 96}" stroke="${C.edge}" stroke-width="1.5"/>
-    ${handle ? `<text x="${PAD}" y="${H - 50}" font-family="${MONO}" font-size="28" font-weight="700" fill="${C.ink}">${esc(handle)}</text>` : ''}
-    <text x="${PAD}" y="${H - 24}" font-family="${MONO}" font-size="19" fill="${C.fog}">npx seshy-wrapped</text>
-    <text x="${W - PAD}" y="${H - 24}" text-anchor="end" font-family="${LABEL}" font-size="21" fill="${C.fog}">made with seshy</text>`;
+    ${handle ? `<text x="${PAD}" y="${H - 58}" font-family="${MONO}" font-size="28" font-weight="700" fill="${C.ink}">${esc(handle)}</text>` : ''}
+    <text x="${PAD}" y="${H - 34}" font-family="${MONO}" font-size="20" font-weight="700" fill="${C.lav}">npx seshy-wrapped</text>
+    <text x="${W - PAD}" y="${H - 34}" text-anchor="end" font-family="${LABEL}" font-size="21" fill="${C.fog}">made with seshy</text>`;
 }
 
 export function cardMeta(report, opts) {
