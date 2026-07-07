@@ -2,7 +2,7 @@
 // outrun grid-and-sun look ported from seshy's palette. Other themes live in
 // themes.js. All rendering is SVG -> resvg; no browser, no model calls.
 import { Resvg } from '@resvg/resvg-js';
-import { THEMES, W, H, esc, footer, cardMeta } from './themes.js';
+import { THEMES, W, H, esc, footer, cardMeta, fitMono } from './themes.js';
 
 const C = {
   bg0: '#0a0713', bg1: '#1a0f2e', ink: '#F5EEFF', lav: '#B8A6D9', fog: '#6C5C8A',
@@ -134,6 +134,9 @@ function sunsetTheme(report, opts) {
     <ellipse cx="${W / 2}" cy="${heroY - 26}" rx="360" ry="132" fill="url(#plate)"/>
     <text x="${W / 2}" y="${heroY}" text-anchor="middle" font-family="${DISPLAY}" font-size="150" font-weight="700" fill="${C.ink}" filter="url(#glow)">${esc(m.head.value)}</text>
     <text x="${W / 2}" y="${heroY + 52}" text-anchor="middle" font-family="${LABEL}" font-size="28" fill="${C.pink}" letter-spacing="4">${esc(m.head.label.toUpperCase())}</text>
+
+    <text x="${W / 2}" y="${gridTop - 44}" text-anchor="middle" font-family="${MONO}" font-size="${fitMono(m.yearbook.title, 30, W - PAD * 2)}" font-weight="700" fill="${C.yellow}" filter="url(#glow)">${esc(m.yearbook.title)}</text>
+    <text x="${W / 2}" y="${gridTop - 14}" text-anchor="middle" font-family="${LABEL}" font-size="18" fill="${C.lav}">${esc(m.yearbook.receipt)}</text>
 
     ${tileSVG}
 
