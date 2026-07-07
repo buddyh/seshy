@@ -128,8 +128,8 @@ function sunsetTheme(report, opts) {
     ${sun(W / 2, 262, 138)}
     ${grid(hy)}
 
-    <text x="${PAD}" y="118" font-family="${LABEL}" font-size="26" fill="${C.cyan}" letter-spacing="8">${esc(m.kicker)}</text>
-    <text x="${PAD}" y="196" font-family="${DISPLAY}" font-size="88" font-weight="700" fill="url(#neon)" filter="url(#glow)">SESHY WRAPPED</text>
+    <text x="${PAD}" y="122" font-family="${LABEL}" font-size="34" font-weight="700" fill="${C.cyan}" letter-spacing="8">${esc(m.kicker)}</text>
+    <text x="${PAD}" y="196" font-family="${DISPLAY}" font-size="76" font-weight="700" fill="url(#neon)" filter="url(#glow)">SESHY WRAPPED</text>
     <text x="${PAD}" y="240" font-family="${LABEL}" font-size="24" fill="${C.lav}">${esc(m.head.sub)}</text>
 
     <ellipse cx="${W / 2}" cy="${heroY - 26}" rx="360" ry="132" fill="url(#plate)"/>

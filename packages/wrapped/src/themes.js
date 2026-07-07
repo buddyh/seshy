@@ -165,8 +165,8 @@ export function starfield(report, opts) {
   <rect width="${W}" height="${H}" fill="url(#sky)"/>
   ${nebula()}
   ${stars(120, 77)}
-  <text x="${PAD}" y="120" font-family="${MONO}" font-size="22" fill="${C.yellow}" letter-spacing="7" filter="url(#glow)">${esc(m.kicker)}</text>
-  <text x="${PAD}" y="200" font-family="${DISPLAY}" font-size="86" font-weight="700" fill="url(#rainbow)" filter="url(#glow)">SESHY WRAPPED</text>
+  <text x="${PAD}" y="122" font-family="${MONO}" font-size="30" font-weight="700" fill="${C.yellow}" letter-spacing="7" filter="url(#glow)">${esc(m.kicker)}</text>
+  <text x="${PAD}" y="198" font-family="${DISPLAY}" font-size="74" font-weight="700" fill="url(#rainbow)" filter="url(#glow)">SESHY WRAPPED</text>
   <text x="${PAD}" y="244" font-family="${MONO}" font-size="21" fill="${C.lav}">${esc(m.head.sub)}</text>
 
   <text x="${W / 2}" y="520" text-anchor="middle" font-family="${DISPLAY}" font-size="190" font-weight="700" fill="url(#rainbow)" filter="url(#glow)">${esc(m.head.value)}</text>
@@ -221,8 +221,8 @@ export function terminal(report, opts) {
   ${stars(70, 5, 900)}
   ${floor}
 
-  <text x="${W / 2}" y="110" text-anchor="middle" font-family="${MONO}" font-size="21" fill="${C.yellow}" letter-spacing="7" filter="url(#glow)">${esc(m.kicker)}</text>
-  <text x="${W / 2}" y="188" text-anchor="middle" font-family="${DISPLAY}" font-size="80" font-weight="700" fill="url(#rainbow)" filter="url(#glow)">SESHY WRAPPED</text>
+  <text x="${W / 2}" y="112" text-anchor="middle" font-family="${MONO}" font-size="30" font-weight="700" fill="${C.yellow}" letter-spacing="7" filter="url(#glow)">${esc(m.kicker)}</text>
+  <text x="${W / 2}" y="186" text-anchor="middle" font-family="${DISPLAY}" font-size="70" font-weight="700" fill="url(#rainbow)" filter="url(#glow)">SESHY WRAPPED</text>
   <text x="${W / 2}" y="230" text-anchor="middle" font-family="${MONO}" font-size="20" fill="${C.lav}">${esc(m.head.sub)}</text>
 
   <rect x="${cardX - 3}" y="${cardY - 3}" width="${cardW + 6}" height="${cardH + 6}" rx="17" fill="${C.purple}" opacity="0.4" filter="url(#glow)"/>
@@ -296,8 +296,8 @@ export function crt(report, opts) {
   <rect x="10" y="10" width="${W - 20}" height="${H - 20}" rx="46" fill="url(#crtbg)"/>
   <rect x="10" y="10" width="${W - 20}" height="${H - 20}" rx="46" fill="url(#crtsheen)"/>
 
-  <text x="${PAD}" y="122" font-family="${MONO}" font-size="21" fill="${C.cyan}" letter-spacing="7" filter="url(#glow)">${esc(m.kicker)}</text>
-  ${aber(PAD, 204, 'SESHY WRAPPED', 84)}
+  <text x="${PAD}" y="124" font-family="${MONO}" font-size="28" font-weight="700" fill="${C.cyan}" letter-spacing="7" filter="url(#glow)">${esc(m.kicker)}</text>
+  ${aber(PAD, 202, 'SESHY WRAPPED', 74)}
   <text x="${PAD}" y="246" font-family="${MONO}" font-size="20" fill="${C.lav}">${esc(m.head.sub)}</text>
 
   <circle cx="${W - PAD - 116}" cy="112" r="9" fill="#ff3b30" filter="url(#glow)"/>
@@ -465,8 +465,8 @@ export function billboard(report, opts) {
   <rect x="${bbX - 4}" y="${bbY - 4}" width="${bbW + 8}" height="${bbH + 8}" rx="22" fill="${C.magenta}" opacity="0.5" filter="url(#glow)"/>
   <rect x="${bbX}" y="${bbY}" width="${bbW}" height="${bbH}" rx="18" fill="url(#panel)" stroke="url(#rainbow)" stroke-width="3"/>
 
-  <text x="${W / 2}" y="104" text-anchor="middle" font-family="${MONO}" font-size="22" fill="${C.yellow}" letter-spacing="8" filter="url(#glow)">${esc(m.kicker)}</text>
-  <text x="${W / 2}" y="196" text-anchor="middle" font-family="${DISPLAY}" font-size="92" font-weight="700" fill="url(#rainbow)" filter="url(#glow)">SESHY WRAPPED</text>
+  <text x="${W / 2}" y="108" text-anchor="middle" font-family="${MONO}" font-size="30" font-weight="700" fill="${C.yellow}" letter-spacing="8" filter="url(#glow)">${esc(m.kicker)}</text>
+  <text x="${W / 2}" y="194" text-anchor="middle" font-family="${DISPLAY}" font-size="78" font-weight="700" fill="url(#rainbow)" filter="url(#glow)">SESHY WRAPPED</text>
   <text x="${W / 2}" y="240" text-anchor="middle" font-family="${MONO}" font-size="21" fill="${C.lav}">${esc(m.head.sub)}</text>
 
   <text x="${W / 2}" y="${bbY + 178}" text-anchor="middle" font-family="${DISPLAY}" font-size="150" font-weight="700" fill="${C.ink}" filter="url(#glow)">${esc(m.head.value)}</text>
