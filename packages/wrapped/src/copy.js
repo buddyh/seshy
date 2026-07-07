@@ -39,7 +39,10 @@ export function prettyModel(id) {
 
 export function pickHeadline(report, cut = 'classic') {
   const { totals, span, machine, alt, tics, meta } = report;
-  const range = span.firstTs ? `${monYr(span.firstTs)} – ${monYr(span.lastTs)}` : '';
+  // Same-month spans collapse to one label ("Jul 2026", not "Jul 2026 – Jul 2026").
+  const range = !span.firstTs ? ''
+    : monYr(span.firstTs) === monYr(span.lastTs) ? monYr(span.lastTs)
+    : `${monYr(span.firstTs)} – ${monYr(span.lastTs)}`;
   const sub = [`${fmt(totals.sessions)} sessions`, `${fmt(totals.projects)} projects`, range]
     .filter(Boolean)
     .join('  ·  ');
