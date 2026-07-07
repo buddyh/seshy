@@ -34,7 +34,7 @@ const SCAN_LINES = [
 function parseArgs(argv) {
   const o = {
     agent: 'all', model: '', since: 0, until: 0, window: 'all',
-    cut: 'classic', theme: 'sunset', allCuts: false, handle: '',
+    cut: 'classic', theme: 'dusk', allCuts: false, handle: '',
     json: false, out: '', open: false, help: false, now: 0,
   };
   for (let i = 0; i < argv.length; i++) {
@@ -75,7 +75,7 @@ Options:
       --since <date>    only sessions after YYYY-MM-DD
   -p, --period <win>    week | month | year | all            (default: all)
   -c, --cut <cut>       ${CUTS.join(' | ')}   (default: classic)
-  -t, --theme <look>    sunset | terminal | starfield | receipt | billboard | crt
+  -t, --theme <look>    dusk | sunset | terminal | starfield | receipt | billboard | crt   (default: dusk)
       --all-cuts        render every cut in the chosen theme
   -h, --handle <@you>   handle printed on the card (default: none)
       --json            emit stats.json to stdout only, no images
@@ -234,7 +234,7 @@ function validate(o) {
   if (o.unknown) return `Unknown option "${o.unknown}". Run with --help to see every flag.`;
   if (!['all', ...KNOWN_AGENTS].includes(o.agent)) return `Unknown agent "${o.agent}". Pick one of: ${KNOWN_AGENTS.join(', ')}, all.`;
   if (!CUTS.includes(o.cut)) return `Unknown cut "${o.cut}". Pick one of: ${CUTS.join(', ')}.`;
-  const themes = ['sunset', 'terminal', 'starfield', 'receipt', 'billboard', 'crt'];
+  const themes = ['dusk', 'sunset', 'terminal', 'starfield', 'receipt', 'billboard', 'crt'];
   if (!themes.includes(o.theme)) return `Unknown theme "${o.theme}". Pick one of: ${themes.join(', ')}.`;
   if (!['all', 'week', 'month', 'year'].includes(o.window) && !o.since) return `Could not parse --since/--period "${o.window}". Use YYYY-MM-DD or week|month|year|all.`;
   return '';
