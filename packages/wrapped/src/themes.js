@@ -3,8 +3,18 @@
 // wordmark gradient, terminal chrome, scanlines, vignette.
 // Each theme: (report, opts) -> full SVG string, 1080x1350 logical (renders
 // at 1600x2000). Pure template functions over the canonical report.
+import { readFileSync } from 'node:fs';
 import { pickHeadline, pickTiles, signature, CUT_TAG, prettyModel } from './copy.js';
 import { yearbook } from './yearbook.js';
+
+// The dusk background is a real frame of the seshy launch film's road scene,
+// re-rendered portrait by the film's own software-3D renderer and baked as a
+// JPEG — pixel parity with the video, no browser in the card render path.
+let duskBgCache = '';
+function duskBackground() {
+  if (!duskBgCache) duskBgCache = readFileSync(new URL('./assets/dusk-road.jpg', import.meta.url)).toString('base64');
+  return duskBgCache;
+}
 
 const C = {
   bg0: '#0d0221', bg1: '#14062b', bg2: '#1a0533', ink: '#F5EEFF', lav: '#B8A6D9',
@@ -503,4 +513,69 @@ export function billboard(report, opts) {
 </svg>`;
 }
 
-export const THEMES = { terminal, starfield, receipt, billboard, crt };
+// ============ DUSK — the launch-film frame: the road scene rendered by the
+// video's own software-3D engine, dimmed by a scrim like the film's caption
+// moments. Warm scene, pink stats & hero label, gold yearbook. Default. ======
+export function dusk(report, opts) {
+  const m = cardMeta(report, opts);
+  const D = {
+    ink: '#F5EDDE', sub: '#C9B4C0', gold: '#EFC335', teal: '#3BE0DA', pink: '#FF6AC1',
+    edge: '#4A3448',
+  };
+  const gridTop = 772;
+  const tileW = (W - PAD * 2 - 20 * 3) / 4;
+  const tileH = 150;
+  const sigY = gridTop + tileH * 2 + 26 + 62;
+
+  let tiles = '';
+  m.tiles.forEach((t, i) => {
+    const x = PAD + (i % 4) * (tileW + 20);
+    const y = gridTop + Math.floor(i / 4) * (tileH + 26);
+    const vSize = Math.min(44, Math.floor((tileW - 36) / (String(t.value).length * 0.56)));
+    const lSize = Math.min(16, Math.floor((tileW - 32) / (t.label.length * 0.47)));
+    tiles += `
+      <rect x="${x}" y="${y}" width="${tileW}" height="${tileH}" rx="16" fill="#170E1C" fill-opacity="0.9" stroke="${D.pink}" stroke-opacity="0.22" stroke-width="1.5"/>
+      <text x="${x + 20}" y="${y + 68}" font-family="${DISPLAY}" font-size="${vSize}" font-weight="700" fill="${D.pink}" filter="url(#glow)">${esc(t.value)}</text>
+      <text x="${x + 20}" y="${y + tileH - 24}" font-family="${LABEL}" font-size="${lSize}" fill="${D.sub}">${esc(t.label)}</text>`;
+  });
+
+  return `${svgOpen}
+  <defs>${glowFilter('glow', 6)}
+    <linearGradient id="dscrim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#12081A" stop-opacity="0.28"/>
+      <stop offset="0.3" stop-color="#12081A" stop-opacity="0.32"/>
+      <stop offset="0.44" stop-color="#12081A" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#12081A" stop-opacity="0.68"/>
+    </linearGradient>
+  </defs>
+  <image x="0" y="0" width="${W}" height="${H}" href="data:image/jpeg;base64,${duskBackground()}" preserveAspectRatio="xMidYMid slice"/>
+  <rect width="${W}" height="${H}" fill="url(#dscrim)"/>
+
+  <text x="${PAD}" y="122" font-family="${MONO}" font-size="30" font-weight="700" fill="${D.teal}" letter-spacing="7">${esc(m.kicker)}</text>
+  <text x="${PAD}" y="198" font-family="${DISPLAY}" font-size="76" font-weight="700" fill="${D.ink}">SESHY WRAPPED</text>
+  <text x="${PAD}" y="242" font-family="${LABEL}" font-size="23" fill="${D.sub}">${esc(m.head.sub)}</text>
+
+  <text x="${W / 2}" y="636" text-anchor="middle" font-family="${DISPLAY}" font-size="150" font-weight="700" fill="${D.ink}" filter="url(#glow)">${esc(m.head.value)}</text>
+  <text x="${W / 2}" y="690" text-anchor="middle" font-family="${LABEL}" font-size="27" fill="${D.pink}" letter-spacing="4">${esc(m.head.label.toUpperCase())}</text>
+
+  <text x="${W / 2}" y="${gridTop - 44}" text-anchor="middle" font-family="${MONO}" font-size="${fitMono(m.yearbook.title, 29, W - PAD * 2)}" font-weight="700" fill="${D.gold}">${esc(m.yearbook.title)}</text>
+  <text x="${W / 2}" y="${gridTop - 14}" text-anchor="middle" font-family="${LABEL}" font-size="18" fill="${D.sub}">${esc(m.yearbook.receipt)}</text>
+
+  ${tiles}
+
+  <text x="${PAD}" y="${sigY}" font-family="${DISPLAY}" font-size="${m.sig.line1.length > 42 ? 26 : 32}" font-weight="700" fill="${D.ink}">${esc(m.sig.line1)}</text>
+  <text x="${PAD}" y="${sigY + 40}" font-family="${LABEL}" font-size="24" fill="${D.sub}">${esc(m.sig.line2)}</text>
+
+  <circle cx="${W - PAD - 58}" cy="${sigY + 2}" r="50" fill="#170E1C" stroke="${D.gold}" stroke-width="2.5"/>
+  <text x="${W - PAD - 58}" y="${sigY + 20}" text-anchor="middle" font-family="${DISPLAY}" font-size="50" font-weight="700" fill="${D.ink}">${esc(m.grade.letter)}</text>
+  <text x="${W - PAD - 58}" y="${sigY + 66}" text-anchor="middle" font-family="${LABEL}" font-size="15" fill="${D.sub}" letter-spacing="2">DELEGATION GRADE</text>
+  <text x="${W - PAD - 58}" y="${sigY + 88}" text-anchor="middle" font-family="${LABEL}" font-size="16" fill="${D.sub}" font-style="italic">${esc(m.grade.why)}</text>
+
+  <line x1="${PAD}" y1="${H - 96}" x2="${W - PAD}" y2="${H - 96}" stroke="${D.edge}" stroke-width="1.5"/>
+  ${m.handle ? `<text x="${PAD}" y="${H - 58}" font-family="${MONO}" font-size="28" font-weight="700" fill="${D.ink}">${esc(m.handle)}</text>` : ''}
+  <text x="${PAD}" y="${H - 34}" font-family="${MONO}" font-size="20" font-weight="700" fill="${D.gold}">npx seshy-wrapped</text>
+  <text x="${W - PAD}" y="${H - 34}" text-anchor="end" font-family="${LABEL}" font-size="21" fill="${D.sub}">made with seshy</text>
+</svg>`;
+}
+
+export const THEMES = { dusk, terminal, starfield, receipt, billboard, crt };
