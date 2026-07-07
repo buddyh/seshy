@@ -4,6 +4,7 @@
 // Each theme: (report, opts) -> full SVG string, 1080x1350 logical (renders
 // at 1600x2000). Pure template functions over the canonical report.
 import { pickHeadline, pickTiles, signature, CUT_TAG, prettyModel } from './copy.js';
+import { yearbook } from './yearbook.js';
 
 const C = {
   bg0: '#0d0221', bg1: '#14062b', bg2: '#1a0533', ink: '#F5EEFF', lav: '#B8A6D9',
@@ -124,6 +125,7 @@ export function cardMeta(report, opts) {
     head: pickHeadline(report, cut),
     tiles: pickTiles(report, cut),
     sig: signature(report, cut),
+    yearbook: yearbook(report),
     grade: report.grade,
     handle: opts.handle ? String(opts.handle).replace(/^@?/, '@') : '',
   };
@@ -172,6 +174,9 @@ export function starfield(report, opts) {
   <text x="${W / 2}" y="520" text-anchor="middle" font-family="${DISPLAY}" font-size="190" font-weight="700" fill="url(#rainbow)" filter="url(#glow)">${esc(m.head.value)}</text>
   <text x="${W / 2}" y="580" text-anchor="middle" font-family="${MONO}" font-size="26" fill="${C.ink}" letter-spacing="5">${esc(m.head.label.toUpperCase())}</text>
   <line x1="${W / 2 - 220}" y1="626" x2="${W / 2 + 220}" y2="626" stroke="url(#rainbow)" stroke-width="2" filter="url(#glow)"/>
+
+  <text x="${W / 2}" y="676" text-anchor="middle" font-family="${MONO}" font-size="${fitMono(m.yearbook.title, 28, W - PAD * 2)}" font-weight="700" fill="${C.yellow}" filter="url(#glow)">${esc(m.yearbook.title)}</text>
+  <text x="${W / 2}" y="706" text-anchor="middle" font-family="${MONO}" font-size="17" fill="${C.lav}">${esc(m.yearbook.receipt)}</text>
 
   ${tiles}
   ${gradeBadge(W - PAD - 60, sigY + 18, m.grade)}
@@ -244,6 +249,8 @@ export function terminal(report, opts) {
   ${rows}
   <line x1="${bx}" y1="${cardY + 742}" x2="${cardX + cardW - 44}" y2="${cardY + 742}" stroke="${C.edge}" stroke-width="1.5"/>
 
+  <text x="${bx}" y="${cardY + 736}" font-family="${MONO}" font-size="${fitMono(m.yearbook.title, 24, cardW - 88)}" font-weight="700" fill="${C.pink}" filter="url(#glow)">${esc(m.yearbook.title)}</text>
+  <text x="${bx}" y="${cardY + 764}" font-family="${MONO}" font-size="16" fill="${C.lav}">${esc(m.yearbook.receipt)}</text>
   <text x="${bx}" y="${cardY + 796}" font-family="${MONO}" font-size="27" font-weight="700" fill="${C.yellow}">${esc(m.sig.line1)}</text>
   <text x="${bx}" y="${cardY + 832}" font-family="${MONO}" font-size="21" fill="${C.lav}">${esc(m.sig.line2)}</text>
   <text x="${cardX + cardW - 44}" y="${cardY + 810}" text-anchor="end" font-family="${MONO}" font-size="24" fill="${C.dim}">grade <tspan font-size="46" font-weight="700" fill="url(#rainbow)">${esc(m.grade.letter)}</tspan></text>
@@ -306,6 +313,8 @@ export function crt(report, opts) {
   ${aber(W / 2, 512, m.head.value, 176, MONO, 'middle')}
   <text x="${W / 2}" y="568" text-anchor="middle" font-family="${MONO}" font-size="24" fill="${C.yellow}" letter-spacing="6" filter="url(#glow)">${esc(m.head.label.toUpperCase())}</text>
   <text x="${W / 2}" y="640" text-anchor="middle" font-family="${MONO}" font-size="19" fill="${C.fog}">PLAY ▶ TRACKING OK</text>
+  <text x="${W / 2}" y="692" text-anchor="middle" font-family="${MONO}" font-size="${fitMono(m.yearbook.title, 26, W - PAD * 2)}" font-weight="700" fill="${C.cyan}" filter="url(#glow)">${esc(m.yearbook.title)}</text>
+  <text x="${W / 2}" y="720" text-anchor="middle" font-family="${MONO}" font-size="15" fill="${C.lav}">${esc(m.yearbook.receipt)}</text>
 
   ${tiles}
 
@@ -396,6 +405,9 @@ export function receipt(report, opts) {
   <text x="${px + 44}" y="${py + 452 + 6 * 62 + 74}" font-family="${MONO}" font-size="19" fill="${faint}">${esc(m.grade.why.toUpperCase())} · CHANGE DUE: SLEEP</text>
   ${dash(py + 452 + 6 * 62 + 100)}
 
+  <text x="${cx}" y="${py + 964}" text-anchor="middle" font-family="${MONO}" font-size="${fitMono(m.yearbook.title, 24, pw - 88)}" font-weight="700" fill="${ink}" letter-spacing="1">${esc(m.yearbook.title)}</text>
+  <text x="${cx}" y="${py + 992}" text-anchor="middle" font-family="${MONO}" font-size="15" fill="${faint}">${esc(m.yearbook.receipt.toUpperCase())}</text>
+
   <text x="${cx}" y="${py + ph - 174}" text-anchor="middle" font-family="${MONO}" font-size="${fitMono(m.sig.line1, 21, pw - 96)}" font-weight="700" fill="${ink}">${esc(m.sig.line1.toUpperCase())}</text>
   ${bars}
   <text x="${cx}" y="${py + ph - 58}" text-anchor="middle" font-family="${MONO}" font-size="20" fill="${ink}" letter-spacing="2">npx seshy-wrapped</text>
@@ -471,6 +483,7 @@ export function billboard(report, opts) {
 
   <text x="${W / 2}" y="${bbY + 178}" text-anchor="middle" font-family="${DISPLAY}" font-size="150" font-weight="700" fill="${C.ink}" filter="url(#glow)">${esc(m.head.value)}</text>
   <text x="${W / 2}" y="${bbY + 232}" text-anchor="middle" font-family="${MONO}" font-size="24" fill="${C.pink}" letter-spacing="5">${esc(m.head.label.toUpperCase())}</text>
+  <text x="${W / 2}" y="${bbY + 272}" text-anchor="middle" font-family="${MONO}" font-size="${fitMono(m.yearbook.title, 22, bbW - 120)}" font-weight="700" fill="${C.yellow}" filter="url(#glow)">${esc(m.yearbook.title)}</text>
 
   ${tiles}
 

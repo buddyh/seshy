@@ -8,6 +8,7 @@ import { createInterface } from 'node:readline';
 import { collect, stableStringify } from './pipeline.js';
 import { KNOWN_AGENTS } from './discover.js';
 import { CUTS, fmt, pickHeadline, signature, prettyModel } from './copy.js';
+import { yearbook } from './yearbook.js';
 
 // ANSI helpers — degrade to plain text when not a TTY.
 const tty = process.stdout.isTTY;
@@ -238,9 +239,15 @@ function printSummary(report, o) {
     log(`  ${pink('│')}  ${colored}${' '.repeat(Math.max(1, inner - 2 - line.length))}${pink('│')}\n`);
   }
   log(`  ${pink('├' + '─'.repeat(inner) + '┤')}\n`);
-  for (const line of [sig.line1, sig.line2]) {
-    const s = line.slice(0, inner - 4);
-    log(`  ${pink('│')}  ${line === sig.line1 ? orange(s) : dim(s)}${' '.repeat(Math.max(1, inner - 2 - s.length))}${pink('│')}\n`);
+  const yb = yearbook(report);
+  for (const [text, paint] of [
+    [`YEARBOOK · ${yb.title}`, (s) => bold(cyan(s))],
+    [yb.receipt, dim],
+    [sig.line1, orange],
+    [sig.line2, dim],
+  ]) {
+    const s = text.slice(0, inner - 4);
+    log(`  ${pink('│')}  ${paint(s)}${' '.repeat(Math.max(1, inner - 2 - s.length))}${pink('│')}\n`);
   }
   if (report.meta.skippedLines) {
     const note = `${fmt(report.meta.skippedLines)} corrupt log lines skipped`;
