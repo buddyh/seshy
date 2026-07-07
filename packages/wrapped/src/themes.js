@@ -339,8 +339,12 @@ export function receipt(report, opts) {
   let rows = '';
   m.tiles.forEach((t, i) => {
     const y = py + 452 + i * 62;
+    // Ellipsize at the cap instead of hard-chopping — a sliced label reads
+    // as a typo on a card people screenshot.
+    const label = t.label.toUpperCase();
+    const clipped = label.length > 34 ? label.slice(0, 33).trimEnd() + '…' : label;
     rows += `
-      <text x="${px + 44}" y="${y}" font-family="${MONO}" font-size="24" fill="${ink}">${esc(t.label.toUpperCase().slice(0, 26))}</text>
+      <text x="${px + 44}" y="${y}" font-family="${MONO}" font-size="24" fill="${ink}">${esc(clipped)}</text>
       <text x="${px + pw - 44}" y="${y}" text-anchor="end" font-family="${MONO}" font-size="26" font-weight="700" fill="${ink}">${esc(t.value)}</text>`;
   });
 
@@ -388,7 +392,7 @@ export function receipt(report, opts) {
   <text x="${px + 44}" y="${py + 452 + 6 * 62 + 74}" font-family="${MONO}" font-size="19" fill="${faint}">${esc(m.grade.why.toUpperCase())} · CHANGE DUE: SLEEP</text>
   ${dash(py + 452 + 6 * 62 + 100)}
 
-  <text x="${cx}" y="${py + ph - 174}" text-anchor="middle" font-family="${MONO}" font-size="21" font-weight="700" fill="${ink}">${esc(m.sig.line1.toUpperCase().slice(0, 44))}</text>
+  <text x="${cx}" y="${py + ph - 174}" text-anchor="middle" font-family="${MONO}" font-size="${Math.min(21, Math.floor((pw - 96) / (m.sig.line1.length * 0.62)))}" font-weight="700" fill="${ink}">${esc(m.sig.line1.toUpperCase())}</text>
   ${bars}
   <text x="${cx}" y="${py + ph - 58}" text-anchor="middle" font-family="${MONO}" font-size="20" fill="${ink}" letter-spacing="2">npx seshy-wrapped</text>
   <text x="${cx}" y="${py + ph - 28}" text-anchor="middle" font-family="${MONO}" font-size="18" fill="${faint}">${m.handle ? esc(m.handle) + ' · ' : ''}made with seshy · no refunds</text>
