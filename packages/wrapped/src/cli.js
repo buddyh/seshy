@@ -64,6 +64,10 @@ ${bold('seshy wrapped')} — your AI-coding life, on a card
 Usage:
   npx seshy-wrapped [options]
 
+Run bare in a terminal and it asks what to wrap: fable week (Jul 1–7,
+Fable 5 only — the default), the last 30 days, or all time. Any scoping
+flag below answers the question in advance.
+
 Options:
   -a, --agent <name>    ${KNOWN_AGENTS.join(' | ')} | all   (default: all)
   -m, --model <substr>  only work answered by matching models — "fable",
@@ -84,6 +88,36 @@ Options:
 
 const PERIODS = { week: 7, month: 30, year: 365 };
 
+// The moment: Fable 5's included-in-subscription window reopened July 1 2026.
+const FABLE_SINCE = '2026-07-01';
+
+// applyScope resolves the interactive scope choice onto the options object.
+// Exported for tests; choice "1" (or Enter) = fable week, "2" = last 30
+// days, "3" = all time.
+export function applyScope(o, choice, now = Date.now()) {
+  const c = String(choice).trim() || '1';
+  if (c === '2') o.since = now - 30 * 86400000;
+  else if (c !== '3') {
+    o.model = 'fable';
+    o.since = Date.parse(FABLE_SINCE);
+  }
+  return o;
+}
+
+// Bare interactive runs get one question instead of a flag. Any scoping
+// flag (--model/--since/--period), --json, or a non-TTY stream skips it.
+async function askScope(o, log) {
+  log(`  what are we wrapping?\n\n`);
+  log(`    1) ${bold('fable week')}     ${dim('Jul 1–7 · Fable 5 only   ← the moment')}\n`);
+  log(`    2) ${bold('last 30 days')}   ${dim('every agent, every model')}\n`);
+  log(`    3) ${bold('all time')}       ${dim('the whole archive')}\n\n`);
+  const rl = createInterface({ input: process.stdin, output: process.stderr });
+  const answer = await new Promise((res) => rl.question(`  pick ${dim('[1]')}: `, res));
+  rl.close();
+  log('\n');
+  return applyScope(o, answer);
+}
+
 export async function main() {
   const o = parseArgs(process.argv.slice(2));
   if (o.help) {
@@ -103,6 +137,12 @@ export async function main() {
   const log = (m) => process.stderr.write(m);
   if (!o.json) {
     log('\n  ' + green('100% local') + dim(' — your sessions never leave your machine.') + '\n\n');
+  }
+
+  // One question on bare interactive runs; flags and pipes skip it.
+  const unscoped = !o.model && !o.since && o.window === 'all';
+  if (unscoped && !o.json && process.stdin.isTTY && process.stderr.isTTY) {
+    await askScope(o, log);
   }
 
   let scanIdx = 0;
