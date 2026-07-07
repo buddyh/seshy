@@ -39,10 +39,15 @@ export function prettyModel(id) {
 
 export function pickHeadline(report, cut = 'classic') {
   const { totals, span, machine, alt, tics, meta } = report;
-  // Same-month spans collapse to one label ("Jul 2026", not "Jul 2026 – Jul 2026").
+  // Day-precise range so a tight window reads "Jul 1 – Jul 7, 2026" instead
+  // of a vague "Jul 2026"; a single day collapses to "Jul 1, 2026".
+  const monDay = (ts) => `${MONTHS[new Date(ts).getMonth()]} ${new Date(ts).getDate()}`;
   const range = !span.firstTs ? ''
-    : monYr(span.firstTs) === monYr(span.lastTs) ? monYr(span.lastTs)
-    : `${monYr(span.firstTs)} – ${monYr(span.lastTs)}`;
+    : (() => {
+        const y = new Date(span.lastTs).getFullYear();
+        const a = monDay(span.firstTs), b = monDay(span.lastTs);
+        return a === b ? `${a}, ${y}` : `${a} – ${b}, ${y}`;
+      })();
   const sub = [`${fmt(totals.sessions)} sessions`, `${fmt(totals.projects)} projects`, range]
     .filter(Boolean)
     .join('  ·  ');
@@ -65,7 +70,7 @@ export function tilePool(report, cut) {
       { raw: machine.toolCalls, value: fmt(machine.toolCalls), label: 'tool calls it made', accent: C.cyan, keep: true },
       { raw: machine.bashCmds, value: fmt(machine.bashCmds), label: 'shell commands it ran', accent: C.orange, min: 10 },
       { raw: machine.filesTouched, value: fmt(machine.filesTouched), label: 'files it edited', accent: C.yellow, min: 5 },
-      { raw: ratio, value: ratio >= 1 ? `${Math.round(ratio)}x` : '—', label: 'words back per word you typed', accent: C.violet, min: 2 },
+      { raw: ratio, value: ratio >= 1 ? `${Math.round(ratio)}x` : '—', label: 'words back per word', accent: C.violet, min: 2 },
       { raw: time.activeHours, value: `${Math.round(time.activeHours)}h`, label: 'agent hours on the clock', accent: C.aqua, min: 2 },
       { raw: machine.cacheRead, value: fmt(machine.cacheRead), label: 'cached tokens re-read', accent: C.magenta, min: 1000 },
       { raw: automation.headless, value: fmt(automation.headless), label: 'sessions run headless for you', accent: C.cyan, min: 5 },
@@ -92,7 +97,7 @@ export function tilePool(report, cut) {
       { raw: tics.iSeeIssue, value: fmt(tics.iSeeIssue), label: '"I see the issue"s', accent: C.pink, min: 3 },
       { raw: tics.absolutelyRight, value: fmt(tics.absolutelyRight), label: '"you’re absolutely right"s', accent: C.orange, min: 3 },
       { raw: tics.goodCatch, value: fmt(tics.goodCatch), label: '"good catch"es', accent: C.violet, min: 3 },
-      { raw: Math.min(tics.agentSorry, you.sorry), value: `${fmt(tics.agentSorry)} : ${fmt(you.sorry)}`, label: 'apologies: extracted vs issued', accent: C.aqua, min: 2 },
+      { raw: Math.min(tics.agentSorry, you.sorry), value: `${fmt(tics.agentSorry)} : ${fmt(you.sorry)}`, label: 'apologies: got vs gave', accent: C.aqua, min: 2 },
       { raw: tics.agentSorry, value: fmt(tics.agentSorry), label: 'apologies issued', accent: C.aqua, min: 2 },
       { raw: tics.agentAdmitWrong, value: fmt(tics.agentAdmitWrong), label: '"I was wrong" confessions', accent: C.magenta, min: 2 },
       { raw: tics.youreRight, value: fmt(tics.youreRight), label: 'times it caved: "you’re right"', accent: C.yellow, min: 3 },
@@ -107,9 +112,9 @@ export function tilePool(report, cut) {
     { raw: machine.linesWritten, value: fmt(machine.linesWritten), label: 'lines of code it wrote', accent: C.pink, min: 100 },
     { raw: deep.gitCommits, value: fmt(deep.gitCommits), label: 'git commits landed', accent: C.yellow, min: 5 },
     { raw: machine.cacheRead, value: fmt(machine.cacheRead), label: 'cached tokens re-read', accent: C.magenta, min: 1000 },
-    { raw: ratio, value: ratio >= 1 ? `${Math.round(ratio)}x` : '—', label: 'words back per word you typed', accent: C.violet, min: 2 },
+    { raw: ratio, value: ratio >= 1 ? `${Math.round(ratio)}x` : '—', label: 'words back per word', accent: C.violet, min: 2 },
     { raw: you.nightOwl, value: fmt(you.nightOwl), label: 'prompts after midnight', accent: C.aqua, min: 5 },
-    { raw: tics.agentSorry, value: `${fmt(tics.agentSorry)} : ${fmt(you.sorry)}`, label: 'apologies: extracted vs issued', accent: C.orange, min: 2 },
+    { raw: tics.agentSorry, value: `${fmt(tics.agentSorry)} : ${fmt(you.sorry)}`, label: 'apologies: got vs gave', accent: C.orange, min: 2 },
     { raw: you.fbombs, value: fmt(you.fbombs), label: 'F-bombs you dropped', accent: C.orange, keep: you.fbombs > 0 || totals.prompts >= 200 },
     { raw: totals.sessions, value: fmt(totals.sessions), label: 'coding sessions', accent: C.cyan, keep: true },
     { raw: totals.assistantWords, value: fmt(totals.assistantWords), label: 'words written for you', accent: C.pink, min: 200 },
