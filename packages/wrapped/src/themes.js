@@ -22,6 +22,10 @@ const LABEL = 'Avenir Next Condensed, Futura, Helvetica Neue, sans-serif';
 
 export const esc = (s) => String(s).replace(/[<>&'"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c]));
 
+// fitMono shrinks a mono line's font-size so it fits maxPx (0.62em/glyph),
+// capped at max — long punchlines scale down instead of colliding or clipping.
+export const fitMono = (text, max, maxPx) => Math.min(max, Math.floor(maxPx / (String(text).length * 0.62)));
+
 // Deterministic PRNG so every render is pixel-identical.
 function rng(seed) {
   let t = seed >>> 0;
@@ -305,11 +309,11 @@ export function crt(report, opts) {
 
   ${tiles}
 
-  <text x="${W - PAD}" y="${sigY + 46}" text-anchor="end" font-family="${MONO}" font-size="21" fill="${C.fog}">DELEGATION GRADE · ${esc(m.grade.why.toUpperCase())}</text>
   ${aber(W - PAD - 96, sigY + 8, m.grade.letter, 92, MONO, 'middle')}
+  <text x="${W - PAD}" y="${sigY + 78}" text-anchor="end" font-family="${MONO}" font-size="${fitMono('DELEGATION GRADE · ' + m.grade.why, 19, 560)}" fill="${C.fog}">DELEGATION GRADE · ${esc(m.grade.why.toUpperCase())}</text>
 
-  <text x="${PAD}" y="${sigY}" font-family="${MONO}" font-size="28" font-weight="700" fill="${C.yellow}">${esc(m.sig.line1)}</text>
-  <text x="${PAD}" y="${sigY + 40}" font-family="${MONO}" font-size="20" fill="${C.lav}">${esc(m.sig.line2)}</text>
+  <text x="${PAD}" y="${sigY}" font-family="${MONO}" font-size="${fitMono(m.sig.line1, 28, W - PAD * 2 - 180)}" font-weight="700" fill="${C.yellow}">${esc(m.sig.line1)}</text>
+  <text x="${PAD}" y="${sigY + 40}" font-family="${MONO}" font-size="${fitMono(m.sig.line2, 20, W - PAD * 2 - 180)}" fill="${C.lav}">${esc(m.sig.line2)}</text>
 
   ${footer(m.handle)}
   ${scanlines(0.06)}
@@ -392,7 +396,7 @@ export function receipt(report, opts) {
   <text x="${px + 44}" y="${py + 452 + 6 * 62 + 74}" font-family="${MONO}" font-size="19" fill="${faint}">${esc(m.grade.why.toUpperCase())} · CHANGE DUE: SLEEP</text>
   ${dash(py + 452 + 6 * 62 + 100)}
 
-  <text x="${cx}" y="${py + ph - 174}" text-anchor="middle" font-family="${MONO}" font-size="${Math.min(21, Math.floor((pw - 96) / (m.sig.line1.length * 0.62)))}" font-weight="700" fill="${ink}">${esc(m.sig.line1.toUpperCase())}</text>
+  <text x="${cx}" y="${py + ph - 174}" text-anchor="middle" font-family="${MONO}" font-size="${fitMono(m.sig.line1, 21, pw - 96)}" font-weight="700" fill="${ink}">${esc(m.sig.line1.toUpperCase())}</text>
   ${bars}
   <text x="${cx}" y="${py + ph - 58}" text-anchor="middle" font-family="${MONO}" font-size="20" fill="${ink}" letter-spacing="2">npx seshy-wrapped</text>
   <text x="${cx}" y="${py + ph - 28}" text-anchor="middle" font-family="${MONO}" font-size="18" fill="${faint}">${m.handle ? esc(m.handle) + ' · ' : ''}made with seshy · no refunds</text>
