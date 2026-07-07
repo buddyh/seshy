@@ -57,7 +57,7 @@ export function pickHeadline(report, cut = 'classic') {
 // render. Each entry carries its raw number for the gate. Exported so
 // tooling (stat pickers, audits) can enumerate the full candidate pool.
 export function tilePool(report, cut) {
-  const { totals, tics, you, awards, machine, alt, automation, time } = report;
+  const { totals, tics, you, awards, machine, alt, automation, time, deep } = report;
   if (cut === 'machine') {
     const ratio = totals.userWords ? totals.assistantWords / totals.userWords : 0;
     return [
@@ -98,13 +98,22 @@ export function tilePool(report, cut) {
       { raw: tics.youreRight, value: fmt(tics.youreRight), label: 'times it caved: "you’re right"', accent: C.yellow, min: 3 },
     ];
   }
+  // The default card leads with leverage (projects, lines, commits, cache,
+  // ratio) and closes with the funny scorelines. F-bombs may show as a zero,
+  // but only when there's enough volume behind it for the zero to be a flex.
+  const ratio = totals.userWords ? totals.assistantWords / totals.userWords : 0;
   return [
-    { raw: totals.sessions, value: fmt(totals.sessions), label: 'coding sessions', accent: C.cyan, keep: true },
-    { raw: totals.assistantWords, value: fmt(totals.assistantWords), label: 'words written for you', accent: C.pink, keep: true },
-    { raw: tics.youreRight, value: fmt(tics.youreRight), label: 'times it caved: "you’re right"', accent: C.yellow, min: 3 },
-    { raw: you.fbombs, value: fmt(you.fbombs), label: 'F-bombs you dropped', accent: C.orange, min: 1 },
-    { raw: tics.agentSorry, value: fmt(tics.agentSorry), label: 'apologies you extracted', accent: C.violet, min: 2 },
+    { raw: totals.projects, value: fmt(totals.projects), label: 'projects touched', accent: C.cyan, keep: true },
+    { raw: machine.linesWritten, value: fmt(machine.linesWritten), label: 'lines of code it wrote', accent: C.pink, min: 100 },
+    { raw: deep.gitCommits, value: fmt(deep.gitCommits), label: 'git commits landed', accent: C.yellow, min: 5 },
+    { raw: machine.cacheRead, value: fmt(machine.cacheRead), label: 'cached tokens re-read', accent: C.magenta, min: 1000 },
+    { raw: ratio, value: ratio >= 1 ? `${Math.round(ratio)}x` : '—', label: 'words back per word you typed', accent: C.violet, min: 2 },
     { raw: you.nightOwl, value: fmt(you.nightOwl), label: 'prompts after midnight', accent: C.aqua, min: 5 },
+    { raw: tics.agentSorry, value: `${fmt(tics.agentSorry)} : ${fmt(you.sorry)}`, label: 'apologies: extracted vs issued', accent: C.orange, min: 2 },
+    { raw: you.fbombs, value: fmt(you.fbombs), label: 'F-bombs you dropped', accent: C.orange, keep: you.fbombs > 0 || totals.prompts >= 200 },
+    { raw: totals.sessions, value: fmt(totals.sessions), label: 'coding sessions', accent: C.cyan, keep: true },
+    { raw: totals.assistantWords, value: fmt(totals.assistantWords), label: 'words written for you', accent: C.pink, min: 200 },
+    { raw: tics.youreRight, value: fmt(tics.youreRight), label: 'times it caved: "you’re right"', accent: C.yellow, min: 3 },
     { raw: awards.longestSession.msgs, value: fmt(awards.longestSession.msgs), label: 'prompts in one marathon session', accent: C.magenta, min: 40 },
     { raw: totals.interrupts, value: fmt(totals.interrupts), label: 'rage-quit interruptions', accent: C.pink, min: 5 },
     { raw: you.youWrong, value: fmt(you.youWrong), label: 'times you told it it was wrong', accent: C.orange, min: 3 },
@@ -115,18 +124,20 @@ export function tilePool(report, cut) {
   ];
 }
 
+export const TILE_COUNT = 8;
+
 export function pickTiles(report, cut = 'classic') {
   const pool = tilePool(report, cut);
   const chosen = [];
   for (const t of pool) {
-    if (chosen.length >= 6) break;
+    if (chosen.length >= TILE_COUNT) break;
     if (t.keep || t.raw >= (t.min || 0)) chosen.push(t);
   }
   for (const t of pool) {
-    if (chosen.length >= 6) break;
+    if (chosen.length >= TILE_COUNT) break;
     if (!chosen.includes(t)) chosen.push(t);
   }
-  return chosen.slice(0, 6);
+  return chosen.slice(0, TILE_COUNT);
 }
 
 // --- The punchline picker. ------------------------------------------------
