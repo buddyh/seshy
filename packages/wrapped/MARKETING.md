@@ -15,7 +15,7 @@ the status; we're the watermark riding along.
 
 - [ ] `npm login` and **publish seshy-wrapped** (name reservation is the whole
       ballgame — a squatter kills the launch). Consider reserving `seshy` too.
-- [ ] CI green on `feat/wrapped`: 14 tests + double-run byte diff.
+- [ ] CI green on `feat/wrapped`: 23 tests + double-run byte diff.
 - [ ] Dogfood on real data: `npx seshy-wrapped` and sanity-read
       every number on the card against `stats.json`.
 - [ ] Raise `cleanupPeriodDays` NOW so the July 7 render still has the full
