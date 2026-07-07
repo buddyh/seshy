@@ -213,6 +213,10 @@ export async function main() {
   const post = postLine(report);
   log('\n  ' + dim('ready to paste:') + '\n');
   log(`  ${yellow(post)}\n  ${cyan('npx seshy-wrapped')}\n\n`);
+  // The cross-promo outro: the retention fact is a genuine PSA (this card is
+  // built from logs Claude Code deletes after 30 days) and the pitch rides it.
+  log(`  ${dim('heads up: Claude Code deletes session logs after 30 days — this card is built from the survivors.')}\n`);
+  log(`  ${dim('keep a year, resume any session: ')}${bold('seshy')}${dim(' · ')}${cyan('seshy retention protect')}${dim(' · ')}${cyan('seshy.dev')}\n\n`);
 
   // Offer to open on macOS.
   if (o.open) {
