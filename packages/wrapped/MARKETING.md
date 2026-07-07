@@ -16,7 +16,7 @@ the status; we're the watermark riding along.
 - [ ] `npm login` and **publish seshy-wrapped** (name reservation is the whole
       ballgame — a squatter kills the launch). Consider reserving `seshy` too.
 - [ ] CI green on `feat/wrapped`: 14 tests + double-run byte diff.
-- [ ] Dogfood on real data: `npx seshy-wrapped --model fable` and sanity-read
+- [ ] Dogfood on real data: `npx seshy-wrapped` and sanity-read
       every number on the card against `stats.json`.
 - [ ] Raise `cleanupPeriodDays` NOW so the July 7 render still has the full
       Fable window (Claude deletes session logs after 30 days by default).
@@ -60,21 +60,21 @@ stats.json: scary commands, "continue"-only prompts, subagents spawned).
 > fable 5 wrote {loc} lines of code for me this week.
 > i said "you're right" to it 0 times. it said it to me {youreRight} times.
 >
-> npx seshy-wrapped --model fable
+> npx seshy-wrapped
 
 **B. Self-deprecating**
 
 > got my fable week report card. delegation grade: {letter}.
 > "{why}" is a real line my own tool printed about me.
 >
-> npx seshy-wrapped --model fable
+> npx seshy-wrapped
 
 **C. Leverage-flex**
 
 > one week of fable 5: {sessions} sessions, {hours}h of agent time,
 > {loc} lines of code, {commits} commits. i typed {userWords} words total.
 >
-> npx seshy-wrapped --model fable
+> npx seshy-wrapped
 
 Rules: numbers in the text must match the attached card exactly (screenshot
 auditors are the distribution). Lowercase. No hashtags. No link in the hero
@@ -85,15 +85,15 @@ post — command only; the repo link goes in reply 2.
 Add value first, card second, never link-drop. Rotate these:
 
 1. > same — my week was {loc} lines and {fbombs} F-bombs. if you want the
-   > actual numbers off your logs: npx seshy-wrapped --model fable
+   > actual numbers off your logs: npx seshy-wrapped
 2. > you can pull your real stats for this — it reads the local session logs.
    > mine said {youreRight} "you're right"s in 7 days. npx seshy-wrapped
 3. > the stat nobody posts: mine "should work now"-ed me {shouldWork} times
-   > this week. {youWrong} times it did not. npx seshy-wrapped --model fable
+   > this week. {youWrong} times it did not. npx seshy-wrapped
 4. > if you're doing a farewell post anyway, one command gives you the
    > receipt for it (literally, there's a receipt theme). npx seshy-wrapped
 5. > yours will be funnier than mine — {n} sessions after midnight is a cry
-   > for help. npx seshy-wrapped --model fable
+   > for help. npx seshy-wrapped
 
 ## Distribution targets (July 7, engage don't spam)
 
