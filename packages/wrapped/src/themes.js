@@ -525,19 +525,25 @@ export function dusk(report, opts) {
   const gridTop = 772;
   const tileW = (W - PAD * 2 - 20 * 3) / 4;
   const tileH = 150;
-  const sigY = gridTop + tileH * 2 + 26 + 62;
+  const sigY = gridTop + tileH * 2 + 26 + 52;
 
   let tiles = '';
   m.tiles.forEach((t, i) => {
     const x = PAD + (i % 4) * (tileW + 20);
     const y = gridTop + Math.floor(i / 4) * (tileH + 26);
-    const vSize = Math.min(44, Math.floor((tileW - 36) / (String(t.value).length * 0.56)));
-    const lSize = Math.min(16, Math.floor((tileW - 32) / (t.label.length * 0.47)));
+    // Conservative fit (0.5em/char budget over inner width) guarantees no
+    // value or label ever runs past its tile; labels floor at 14 for mobile.
+    const vSize = Math.min(46, Math.floor((tileW - 32) / (String(t.value).length * 0.5)));
+    const lSize = Math.max(14, Math.min(20, Math.floor((tileW - 40) / (t.label.length * 0.5))));
     tiles += `
       <rect x="${x}" y="${y}" width="${tileW}" height="${tileH}" rx="16" fill="#170E1C" fill-opacity="0.9" stroke="${D.pink}" stroke-opacity="0.22" stroke-width="1.5"/>
-      <text x="${x + 20}" y="${y + 68}" font-family="${DISPLAY}" font-size="${vSize}" font-weight="700" fill="${D.pink}" filter="url(#glow)">${esc(t.value)}</text>
-      <text x="${x + 20}" y="${y + tileH - 24}" font-family="${LABEL}" font-size="${lSize}" fill="${D.sub}">${esc(t.label)}</text>`;
+      <text x="${x + 20}" y="${y + 72}" font-family="${DISPLAY}" font-size="${vSize}" font-weight="700" fill="${D.pink}" filter="url(#glow)">${esc(t.value)}</text>
+      <text x="${x + 20}" y="${y + tileH - 22}" font-family="${LABEL}" font-size="${lSize}" fill="${D.sub}">${esc(t.label)}</text>`;
   });
+
+  // Fit guards for the single-line copy so nothing overruns its width.
+  const rSize = Math.min(23, Math.floor((W - PAD * 2) / (m.yearbook.receipt.length * 0.46)));
+  const whySize = Math.min(18, Math.floor(320 / (m.grade.why.length * 0.5)));
 
   return `${svgOpen}
   <defs>${glowFilter('glow', 6)}
@@ -555,21 +561,21 @@ export function dusk(report, opts) {
   <text x="${PAD}" y="198" font-family="${DISPLAY}" font-size="76" font-weight="700" fill="${D.ink}">SESHY WRAPPED</text>
   <text x="${PAD}" y="242" font-family="${LABEL}" font-size="23" fill="${D.sub}">${esc(m.head.sub)}</text>
 
-  <text x="${W / 2}" y="636" text-anchor="middle" font-family="${DISPLAY}" font-size="150" font-weight="700" fill="${D.ink}" filter="url(#glow)">${esc(m.head.value)}</text>
-  <text x="${W / 2}" y="690" text-anchor="middle" font-family="${LABEL}" font-size="27" fill="${D.pink}" letter-spacing="4">${esc(m.head.label.toUpperCase())}</text>
+  <text x="${W / 2}" y="606" text-anchor="middle" font-family="${DISPLAY}" font-size="150" font-weight="700" fill="${D.ink}" filter="url(#glow)">${esc(m.head.value)}</text>
+  <text x="${W / 2}" y="654" text-anchor="middle" font-family="${LABEL}" font-size="28" fill="${D.pink}" letter-spacing="4">${esc(m.head.label.toUpperCase())}</text>
 
-  <text x="${W / 2}" y="${gridTop - 44}" text-anchor="middle" font-family="${MONO}" font-size="${fitMono(m.yearbook.title, 29, W - PAD * 2)}" font-weight="700" fill="${D.gold}">${esc(m.yearbook.title)}</text>
-  <text x="${W / 2}" y="${gridTop - 14}" text-anchor="middle" font-family="${LABEL}" font-size="18" fill="${D.sub}">${esc(m.yearbook.receipt)}</text>
+  <text x="${W / 2}" y="706" text-anchor="middle" font-family="${MONO}" font-size="${fitMono(m.yearbook.title, 30, W - PAD * 2)}" font-weight="700" fill="${D.gold}">${esc(m.yearbook.title)}</text>
+  <text x="${W / 2}" y="${gridTop - 30}" text-anchor="middle" font-family="${LABEL}" font-size="${rSize}" fill="${D.sub}">${esc(m.yearbook.receipt)}</text>
 
   ${tiles}
 
   <text x="${PAD}" y="${sigY}" font-family="${DISPLAY}" font-size="${m.sig.line1.length > 42 ? 26 : 32}" font-weight="700" fill="${D.ink}">${esc(m.sig.line1)}</text>
   <text x="${PAD}" y="${sigY + 40}" font-family="${LABEL}" font-size="24" fill="${D.sub}">${esc(m.sig.line2)}</text>
 
-  <circle cx="${W - PAD - 58}" cy="${sigY + 2}" r="50" fill="#170E1C" stroke="${D.gold}" stroke-width="2.5"/>
-  <text x="${W - PAD - 58}" y="${sigY + 20}" text-anchor="middle" font-family="${DISPLAY}" font-size="50" font-weight="700" fill="${D.ink}">${esc(m.grade.letter)}</text>
-  <text x="${W - PAD - 58}" y="${sigY + 66}" text-anchor="middle" font-family="${LABEL}" font-size="15" fill="${D.sub}" letter-spacing="2">DELEGATION GRADE</text>
-  <text x="${W - PAD - 58}" y="${sigY + 88}" text-anchor="middle" font-family="${LABEL}" font-size="16" fill="${D.sub}" font-style="italic">${esc(m.grade.why)}</text>
+  <circle cx="${W - PAD - 58}" cy="${sigY - 2}" r="50" fill="#170E1C" stroke="${D.gold}" stroke-width="2.5"/>
+  <text x="${W - PAD - 58}" y="${sigY + 16}" text-anchor="middle" font-family="${DISPLAY}" font-size="50" font-weight="700" fill="${D.ink}">${esc(m.grade.letter)}</text>
+  <text x="${W - PAD - 58}" y="${sigY + 60}" text-anchor="middle" font-family="${LABEL}" font-size="17" fill="${D.sub}" letter-spacing="2">DELEGATION GRADE</text>
+  <text x="${W - PAD - 58}" y="${sigY + 82}" text-anchor="middle" font-family="${LABEL}" font-size="${whySize}" fill="${D.sub}" font-style="italic">${esc(m.grade.why)}</text>
 
   <line x1="${PAD}" y1="${H - 96}" x2="${W - PAD}" y2="${H - 96}" stroke="${D.edge}" stroke-width="1.5"/>
   ${m.handle ? `<text x="${PAD}" y="${H - 58}" font-family="${MONO}" font-size="28" font-weight="700" fill="${D.ink}">${esc(m.handle)}</text>` : ''}
