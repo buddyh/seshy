@@ -96,7 +96,6 @@ function tile(x, y, w, h, value, label, accent) {
   return `
   <g>
     <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="20" fill="url(#tile)" stroke="${accent}" stroke-opacity="0.55" stroke-width="1.5"/>
-    <rect x="${x}" y="${y}" width="6" height="${h}" rx="3" fill="${accent}"/>
     <text x="${x + 26}" y="${y + 74}" font-family="${DISPLAY}" font-size="60" font-weight="700" fill="${accent}" filter="url(#glow)">${esc(value)}</text>
     <text x="${x + 27}" y="${y + h - 26}" font-family="${LABEL}" font-size="23" fill="${C.lav}">${esc(label)}</text>
   </g>`;
