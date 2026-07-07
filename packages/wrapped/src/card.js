@@ -93,11 +93,15 @@ function grid(hy) {
 }
 
 function tile(x, y, w, h, value, label, accent) {
+  // Value and label shrink to their tile — the 2x4 grid runs narrower than
+  // the old 2x3, and labels like "words back per word you typed" must fit.
+  const vSize = Math.min(48, Math.floor((w - 36) / (String(value).length * 0.56)));
+  const lSize = Math.min(17, Math.floor((w - 34) / (label.length * 0.47)));
   return `
   <g>
-    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="20" fill="url(#tile)" stroke="${accent}" stroke-opacity="0.55" stroke-width="1.5"/>
-    <text x="${x + 26}" y="${y + 74}" font-family="${DISPLAY}" font-size="60" font-weight="700" fill="${accent}" filter="url(#glow)">${esc(value)}</text>
-    <text x="${x + 27}" y="${y + h - 26}" font-family="${LABEL}" font-size="23" fill="${C.lav}">${esc(label)}</text>
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="18" fill="url(#tile)" stroke="${accent}" stroke-opacity="0.55" stroke-width="1.5"/>
+    <text x="${x + 20}" y="${y + 70}" font-family="${DISPLAY}" font-size="${vSize}" font-weight="700" fill="${accent}" filter="url(#glow)">${esc(value)}</text>
+    <text x="${x + 20}" y="${y + h - 24}" font-family="${LABEL}" font-size="${lSize}" fill="${C.lav}">${esc(label)}</text>
   </g>`;
 }
 
@@ -106,17 +110,17 @@ function sunsetTheme(report, opts) {
   const hy = 360;
   const heroY = 636;
   const gridTop = 772;
-  const tileW = (W - PAD * 2 - 28 * 2) / 3;
+  const tileW = (W - PAD * 2 - 20 * 3) / 4;
   const tileH = 150;
   const row2 = gridTop + tileH + 26;
   const sigY = row2 + tileH + 62;
   const badgeCy = row2 + tileH + 12 + 60;
 
   let tileSVG = '';
-  m.tiles.slice(0, 6).forEach((t, i) => {
-    const col = i % 3;
-    const row = Math.floor(i / 3);
-    const x = PAD + col * (tileW + 28);
+  m.tiles.slice(0, 8).forEach((t, i) => {
+    const col = i % 4;
+    const row = Math.floor(i / 4);
+    const x = PAD + col * (tileW + 20);
     const y = gridTop + row * (tileH + 26);
     tileSVG += tile(x, y, tileW, tileH, t.value, t.label, t.accent);
   });

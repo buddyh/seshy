@@ -145,7 +145,7 @@ function gradeBadge(cx, cy, grade, ringRef = 'url(#rainbow)') {
 // ============ STARFIELD — deep space, rainbow hero, glass tiles ============
 export function starfield(report, opts) {
   const m = cardMeta(report, opts);
-  const tileW = (W - PAD * 2 - 28 * 2) / 3;
+  const tileW = (W - PAD * 2 - 20 * 3) / 4;
   const tileH = 150;
   const gridTop = 742;
   const row2 = gridTop + tileH + 26;
@@ -153,13 +153,15 @@ export function starfield(report, opts) {
 
   let tiles = '';
   m.tiles.forEach((t, i) => {
-    const x = PAD + (i % 3) * (tileW + 28);
-    const y = gridTop + Math.floor(i / 3) * (tileH + 26);
+    const x = PAD + (i % 4) * (tileW + 20);
+    const y = gridTop + Math.floor(i / 4) * (tileH + 26);
+    const vSize = Math.min(42, Math.floor((tileW - 36) / (String(t.value).length * 0.62)));
+    const lSize = Math.min(16, Math.floor((tileW - 32) / (t.label.length * 0.47)));
     tiles += `
       <rect x="${x}" y="${y}" width="${tileW}" height="${tileH}" rx="18" fill="#160a28" fill-opacity="0.72" stroke="${t.accent}" stroke-opacity="0.5" stroke-width="1.5"/>
-      <circle cx="${x + 26}" cy="${y + 30}" r="4" fill="${t.accent}" filter="url(#glow)"/>
-      <text x="${x + 24}" y="${y + 86}" font-family="${MONO}" font-size="52" font-weight="700" fill="${t.accent}" filter="url(#glow)">${esc(t.value)}</text>
-      <text x="${x + 25}" y="${y + tileH - 24}" font-family="${LABEL}" font-size="22" fill="${C.lav}">${esc(t.label)}</text>`;
+      <circle cx="${x + 22}" cy="${y + 28}" r="4" fill="${t.accent}" filter="url(#glow)"/>
+      <text x="${x + 20}" y="${y + 82}" font-family="${MONO}" font-size="${vSize}" font-weight="700" fill="${t.accent}" filter="url(#glow)">${esc(t.value)}</text>
+      <text x="${x + 20}" y="${y + tileH - 24}" font-family="${LABEL}" font-size="${lSize}" fill="${C.lav}">${esc(t.label)}</text>`;
   });
 
   return `${svgOpen}
@@ -198,7 +200,7 @@ export function terminal(report, opts) {
 
   let rows = '';
   m.tiles.forEach((t, i) => {
-    const y = cardY + 372 + i * 62;
+    const y = cardY + 372 + i * 48;
     rows += `
       <text x="${bx}" y="${y}" font-family="${MONO}" font-size="25" fill="${C.lav}">${esc(t.label)}</text>
       <line x1="${bx + t.label.length * 15 + 18}" y1="${y - 7}" x2="${cardX + cardW - 44 - String(t.value).length * 17 - 20}" y2="${y - 7}" stroke="${C.edge}" stroke-width="1.5" stroke-dasharray="1 6"/>
@@ -264,7 +266,7 @@ export function terminal(report, opts) {
 // ============ CRT — phosphor screen, chromatic aberration, REC overlay ============
 export function crt(report, opts) {
   const m = cardMeta(report, opts);
-  const tileW = (W - PAD * 2 - 24 * 2) / 3;
+  const tileW = (W - PAD * 2 - 20 * 3) / 4;
   const tileH = 146;
   const gridTop = 748;
   const row2 = gridTop + tileH + 24;
@@ -277,13 +279,15 @@ export function crt(report, opts) {
 
   let tiles = '';
   m.tiles.forEach((t, i) => {
-    const x = PAD + (i % 3) * (tileW + 24);
-    const y = gridTop + Math.floor(i / 3) * (tileH + 24);
+    const x = PAD + (i % 4) * (tileW + 20);
+    const y = gridTop + Math.floor(i / 4) * (tileH + 24);
+    const vSize = Math.min(40, Math.floor((tileW - 36) / (String(t.value).length * 0.62)));
+    const lSize = Math.min(14, Math.floor((tileW - 32) / (t.label.length * 0.62)));
     tiles += `
       <path d="M ${x} ${y + 14} v -14 h 14 M ${x + tileW} ${y + tileH - 14} v 14 h -14" stroke="${t.accent}" stroke-width="2.5" fill="none" opacity="0.9"/>
       <rect x="${x}" y="${y}" width="${tileW}" height="${tileH}" fill="#0f0620" fill-opacity="0.6" stroke="${t.accent}" stroke-opacity="0.25" stroke-width="1"/>
-      <text x="${x + 22}" y="${y + 76}" font-family="${MONO}" font-size="50" font-weight="700" fill="${t.accent}" filter="url(#glow)">${esc(t.value)}</text>
-      <text x="${x + 23}" y="${y + tileH - 22}" font-family="${MONO}" font-size="15" fill="${C.lav}">${esc(t.label.length > 30 ? t.label.slice(0, 29) + '…' : t.label)}</text>`;
+      <text x="${x + 18}" y="${y + 74}" font-family="${MONO}" font-size="${vSize}" font-weight="700" fill="${t.accent}" filter="url(#glow)">${esc(t.value)}</text>
+      <text x="${x + 18}" y="${y + tileH - 22}" font-family="${MONO}" font-size="${lSize}" fill="${C.lav}">${esc(t.label)}</text>`;
   });
 
   return `${svgOpen}
@@ -351,7 +355,7 @@ export function receipt(report, opts) {
 
   let rows = '';
   m.tiles.forEach((t, i) => {
-    const y = py + 452 + i * 62;
+    const y = py + 452 + i * 48;
     // Ellipsize at the cap instead of hard-chopping — a sliced label reads
     // as a typo on a card people screenshot.
     const label = t.label.toUpperCase();
@@ -441,18 +445,20 @@ export function billboard(report, opts) {
   const bbW = W - 184;
   const bbY = 336;
   const bbH = 700;
-  const tileW = (bbW - 88 - 24 * 2) / 3;
+  const tileW = (bbW - 88 - 20 * 3) / 4;
   const tileH = 128;
   const tTop = bbY + 300;
 
   let tiles = '';
   m.tiles.forEach((t, i) => {
-    const x = bbX + 44 + (i % 3) * (tileW + 24);
-    const y = tTop + Math.floor(i / 3) * (tileH + 22);
+    const x = bbX + 44 + (i % 4) * (tileW + 20);
+    const y = tTop + Math.floor(i / 4) * (tileH + 22);
+    const vSize = Math.min(38, Math.floor((tileW - 32) / (String(t.value).length * 0.56)));
+    const lSize = Math.min(15, Math.floor((tileW - 30) / (t.label.length * 0.47)));
     tiles += `
       <rect x="${x}" y="${y}" width="${tileW}" height="${tileH}" rx="12" fill="#12071f" stroke="${t.accent}" stroke-opacity="0.5" stroke-width="1.5"/>
-      <text x="${x + 20}" y="${y + 62}" font-family="${DISPLAY}" font-size="46" font-weight="700" fill="${t.accent}" filter="url(#glow)">${esc(t.value)}</text>
-      <text x="${x + 21}" y="${y + tileH - 20}" font-family="${LABEL}" font-size="19" fill="${C.lav}">${esc(t.label)}</text>`;
+      <text x="${x + 16}" y="${y + 58}" font-family="${DISPLAY}" font-size="${vSize}" font-weight="700" fill="${t.accent}" filter="url(#glow)">${esc(t.value)}</text>
+      <text x="${x + 16}" y="${y + tileH - 18}" font-family="${LABEL}" font-size="${lSize}" fill="${C.lav}">${esc(t.label)}</text>`;
   });
 
   return `${svgOpen}
