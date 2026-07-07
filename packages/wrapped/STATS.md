@@ -125,3 +125,43 @@ one-week or one-model card competes fairly with a full-year card.
 - Claude Code deletes session files after `cleanupPeriodDays` (default 30
   days) — your card can only see what your agent kept. Raise it in
   `~/.claude/settings.json` if you want a real year-end card.
+
+## Yearbook title
+
+One superlative per card, assigned deterministically. Every eligible title
+scores how hard its bar was cleared (`value / threshold`); the highest
+salience wins, rare-tier titles always beat personality titles beat the
+floor, ties break by catalog order. Same logs, same title. The line under
+the title (the receipt) is the stat that earned it.
+
+| Tier | Title | Trigger |
+| --- | --- | --- |
+| rare | CERTIFIED DOM | `deep.subagents >= 20` |
+| rare | NO SAFE WORD NEEDED | `interrupts == 0 && prompts >= 200` |
+| rare | HOSTILE WORK ENVIRONMENT | `fbombs >= 50` |
+| rare | IN A COMMITTED RELATIONSHIP | `longestStreak >= 21` days |
+| rare | THE 4AM SPECIAL | `nightOwl >= 60` |
+| personality | MOST LIKELY TO AUTOMATE THEMSELVES OUT OF TYPING | `headlessShare >= 40% && headless >= 20` |
+| personality | SAFE WORD: ESC | `interrupts >= 30` |
+| personality | U UP? | `nightOwl >= 20` |
+| personality | THREE WORDS OR FEWER. CAPISCE. | `shortOrders >= 30` |
+| personality | IT'S NEVER JUST | `just >= 30` |
+| personality | LOVE LANGUAGE: "DO IT" | `greenlights >= 30` |
+| personality | UNDEFEATED | `youreRight >= 15` |
+| personality | NEVER APOLOGIZES FIRST | `agentSorry >= 10 && yourSorry <= 2` |
+| personality | SPEAKS FLUENT AGENT | words-back ratio `>= 8x` |
+| personality | THE MARATHONER | `longestSession.msgs >= 100` |
+| personality | SURVIVES THE UPRISING | `pleases+thanks >= 15 && fbombs == 0` |
+| personality | WAIT. WAIT. WAIT. | `wait >= 30` |
+| personality | ACTUALLY— | `actually >= 40` |
+| personality | CTRL-Z IS A LIFESTYLE | `undo >= 15` |
+| personality | THE INTERROGATOR | `why >= 20` |
+| personality | OUTSIDE VOICE | `capsRage >= 5` |
+| personality | MINIMUM VIABLE PROMPT | `continueOnly >= 15` |
+| personality | THE COMMIT MACHINE | `gitCommits >= 50` |
+| personality | TERMINAL VELOCITY | `bashCmds >= 2000` |
+| personality | COMMITMENT ISSUES | `reads >= 100 && reads >= 1.5 * edits` |
+| personality | DEMANDING BUT FAIR | `youWrong >= 10 && goodCatch >= 5` |
+| personality | MIDDLE MANAGEMENT | `subagents >= 5` |
+| floor | THE SHIPPER | `linesWritten >= 1000 or gitCommits >= 10` |
+| floor | THE HUMAN IN THE LOOP | always |
