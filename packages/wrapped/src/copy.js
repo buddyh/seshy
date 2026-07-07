@@ -54,8 +54,9 @@ export function pickHeadline(report, cut = 'classic') {
 }
 
 // Ordered candidate tiles per cut; the first six that clear their threshold
-// render. Each entry carries its raw number for the gate.
-function tilePool(report, cut) {
+// render. Each entry carries its raw number for the gate. Exported so
+// tooling (stat pickers, audits) can enumerate the full candidate pool.
+export function tilePool(report, cut) {
   const { totals, tics, you, awards, machine, alt, automation, time } = report;
   if (cut === 'machine') {
     const ratio = totals.userWords ? totals.assistantWords / totals.userWords : 0;
@@ -138,7 +139,7 @@ const PAIRED = 3;
 const STREAK = 2;
 const RAW = 1;
 
-function punchlineCatalog(report) {
+export function punchlineCatalog(report) {
   const { totals, tics, you, awards, machine, alt, deep, meta, time } = report;
   const p = base(awards.longestSession.cwd);
   return [
