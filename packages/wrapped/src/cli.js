@@ -7,7 +7,7 @@ import { execFileSync } from 'node:child_process';
 import { createInterface } from 'node:readline';
 import { collect, stableStringify } from './pipeline.js';
 import { KNOWN_AGENTS } from './discover.js';
-import { CUTS, fmt, pickHeadline, signature, prettyModel } from './copy.js';
+import { CUTS, fmt, pickHeadline, pickTiles, signature, prettyModel } from './copy.js';
 import { yearbook } from './yearbook.js';
 
 // ANSI helpers — degrade to plain text when not a TTY.
@@ -257,16 +257,11 @@ function printSummary(report, o) {
   const label = report.meta.model ? prettyModel(report.deep.topModel.id || report.meta.model) : null;
 
   const title = `SESHY WRAPPED${label ? ` · ${label.toUpperCase()}` : ''}${report.meta.rookie ? ' · ROOKIE CARD' : ''}`;
+  // The box mirrors the card: the same gated tile pick, so the screenshot
+  // and the PNG never disagree.
   const rows = [
     [head.value, head.label],
-    [fmt(t.sessions), `sessions across ${fmt(t.projects)} projects`],
-    [`${Math.round(report.time.activeHours)}h`, 'agent hours on the clock'],
-    // Headless runs sit outside the interactive session count above, so the
-    // line names its own universe — screenshot auditors will do the math.
-    [fmt(report.automation.headless), `headless runs alongside (${report.automation.headlessShare}% of all activity)`],
-    [fmt(report.tics.youreRight), `"you're right"s pried out of it`],
-    [fmt(report.you.fbombs), 'F-bombs dropped'],
-    [fmt(report.you.nightOwl), 'prompts after midnight'],
+    ...pickTiles(report, o.cut).map((tl) => [tl.value, tl.label]),
     [report.grade.letter, `delegation grade — ${report.grade.why}`],
   ];
 
