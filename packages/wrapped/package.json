@@ -1,6 +1,6 @@
 {
   "name": "seshy-wrapped",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Your AI-coding life, on a card. 100% local — reads the session logs your coding agents already keep and renders shareable stat cards.",
   "type": "module",
   "bin": {
