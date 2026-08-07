@@ -17,6 +17,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/glamour/v2"
 	"charm.land/lipgloss/v2"
+	"github.com/atotto/clipboard"
 	"github.com/buddyh/seshy/internal/agents"
 	"github.com/buddyh/seshy/internal/config"
 	"github.com/buddyh/seshy/internal/render"
@@ -149,6 +150,11 @@ type model struct {
 	global      bool
 	lastSel     string
 	chosen      *agents.Session
+	handoff     *agents.Session
+	handoffTool string
+	handoffAt   int
+	notice      string
+	noticeUntil time.Time
 
 	// Collection params, kept so the `h` key can re-collect with a flipped filter.
 	// (pageSize below doubles as the per-agent / first-page count.)
@@ -166,8 +172,24 @@ type model struct {
 
 type tickMsg time.Time
 
+type clipboardMsg struct {
+	label string
+	err   error
+}
+
 func tick() tea.Cmd {
 	return tea.Tick(time.Second/30, func(t time.Time) tea.Msg { return tickMsg(t) })
+}
+
+func copyToClipboard(text, label string) tea.Cmd {
+	return func() tea.Msg {
+		return clipboardMsg{label: label, err: clipboard.WriteAll(text)}
+	}
+}
+
+func (m *model) setNotice(notice string) {
+	m.notice = notice
+	m.noticeUntil = time.Now().Add(3 * time.Second)
 }
 
 const shimmerStep = 1 // gradient columns advanced per tick
@@ -231,6 +253,8 @@ func footerBar(w int, right string, hideHeadless bool) string {
 		stKey.Render("/") + " " + stMuted.Render("filter"),
 		stKey.Render("enter") + " " + stMuted.Render("resume"),
 		stKey.Render("p") + " " + stMuted.Render("preview"),
+		stKey.Render("y") + " " + stMuted.Render("copy id"),
+		stKey.Render("a") + " " + stMuted.Render("handoff"),
 		headless,
 		stKey.Render("q") + " " + stMuted.Render("quit"),
 	}, sep)
@@ -245,6 +269,16 @@ func footerBar(w int, right string, hideHeadless bool) string {
 		return bar.Width(w).Render(left)
 	}
 	return bar.Render(left) + bar.Render(strings.Repeat(" ", gap)) + bar.Render(r)
+}
+
+func handoffFooterBar(w int) string {
+	sep := stFog.Render("  ")
+	hints := strings.Join([]string{
+		stKey.Render("↑↓") + " " + stMuted.Render("choose agent"),
+		stKey.Render("enter") + " " + stMuted.Render("launch"),
+		stKey.Render("esc") + " " + stMuted.Render("cancel"),
+	}, sep)
+	return lipgloss.NewStyle().Background(lipgloss.Color(swSurface)).Width(w).Render(" " + hints)
 }
 
 // panelInnerH is the content height inside the body panels (minus the footer bar).
@@ -372,7 +406,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tickMsg:
 		m.phase += shimmerStep
+		if m.notice != "" && !time.Now().Before(m.noticeUntil) {
+			m.notice = ""
+			m.noticeUntil = time.Time{}
+		}
 		return m, tick()
+	case clipboardMsg:
+		if msg.err != nil {
+			m.setNotice("copy failed: " + msg.err.Error())
+		} else {
+			m.setNotice("copied " + msg.label)
+		}
+		return m, nil
 	case tea.WindowSizeMsg:
 		m.w, m.h = msg.Width, msg.Height
 		m.ready = true
@@ -383,6 +428,32 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.appendPage()
 		}
 	case tea.KeyPressMsg:
+		if m.handoff != nil {
+			switch msg.String() {
+			case "esc", "q":
+				m.handoff = nil
+				m.handoffTool = ""
+				m.handoffAt = 0
+				return m, nil
+			case "up", "k":
+				if m.handoffAt > 0 {
+					m.handoffAt--
+				}
+				return m, nil
+			case "down", "j":
+				if m.handoffAt+1 < len(m.handoffTargets()) {
+					m.handoffAt++
+				}
+				return m, nil
+			case "enter":
+				targets := m.handoffTargets()
+				if len(targets) > 0 {
+					m.handoffTool = targets[m.handoffAt]
+				}
+				return m, tea.Quit
+			}
+			return m, nil
+		}
 		if m.list.FilterState() != list.Filtering {
 			switch msg.String() {
 			case "q", "ctrl+c":
@@ -397,6 +468,22 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.showPreview = !m.showPreview
 				m.layout()
 				m.lastSel = ""
+			case "y":
+				if it, ok := m.list.SelectedItem().(sessionItem); ok {
+					return m, copyToClipboard(it.s.ID, "session ID")
+				}
+			case "a":
+				if it, ok := m.list.SelectedItem().(sessionItem); ok {
+					s := it.s
+					targets := agents.AvailableHandoffTargets(s.Tool)
+					if len(targets) == 0 {
+						m.setNotice("no other supported agent found on PATH")
+						return m, nil
+					}
+					m.handoff = &s
+					m.handoffAt = 0
+				}
+				return m, nil
 			case "h":
 				return m, m.toggleHeadless()
 			case "ctrl+d":
@@ -429,7 +516,9 @@ func (m model) View() tea.View {
 	ph := m.panelInnerH() + 2 // total panel box height (lipgloss is border-box)
 
 	var body string
-	if m.showPreview {
+	if m.handoff != nil {
+		body = bevelPanel(m.w, ph, true).Render(m.handoffView())
+	} else if m.showPreview {
 		body = lipgloss.JoinHorizontal(lipgloss.Top,
 			bevelPanel(m.list.Width()+2, ph, true).Render(m.list.View()),
 			bevelPanel(m.vp.Width()+2, ph, false).Render(m.vp.View()))
@@ -441,9 +530,43 @@ func (m model) View() tea.View {
 	if n := len(m.list.Items()); n > 0 {
 		right = fmt.Sprintf("%d/%d", m.list.Index()+1, n)
 	}
-	v := tea.NewView(lipgloss.JoinVertical(lipgloss.Left, header, body, footerBar(m.w, right, m.hideHeadless)))
+	if m.notice != "" {
+		right = m.notice
+	}
+	footer := footerBar(m.w, right, m.hideHeadless)
+	if m.handoff != nil {
+		footer = handoffFooterBar(m.w)
+	}
+	v := tea.NewView(lipgloss.JoinVertical(lipgloss.Left, header, body, footer))
 	v.AltScreen = true
 	return v
+}
+
+func (m model) handoffTargets() []string {
+	if m.handoff == nil {
+		return nil
+	}
+	return agents.AvailableHandoffTargets(m.handoff.Tool)
+}
+
+func (m model) handoffView() string {
+	if m.handoff == nil {
+		return ""
+	}
+	var b strings.Builder
+	b.WriteString(section("resume in another agent") + "\n\n")
+	b.WriteString(keyVal("from", labelStyle(m.handoff.Tool).Render(agents.Label(m.handoff.Tool))) + "\n")
+	b.WriteString(keyVal("id", stMuted.Render(truncate(m.handoff.ID, max(8, m.w-12)))) + "\n\n")
+	b.WriteString(stMuted.Render("Choose an installed agent. Seshy will open it here and send the handoff as the first message.") + "\n\n")
+	for i, target := range m.handoffTargets() {
+		label := agents.Label(target)
+		if i == m.handoffAt {
+			b.WriteString(stSelBar.Render("▌") + " " + stSelText.Render(label) + "  " + stFog.Render(target) + "\n")
+		} else {
+			b.WriteString("  " + stMuted.Render(label) + "  " + stFog.Render(target) + "\n")
+		}
+	}
+	return b.String()
 }
 
 // ---- preview content ----
@@ -545,7 +668,8 @@ func max(a, b int) int {
 
 // ---- entry ----
 
-// Run shows the picker; on Enter it execs the chosen session's resume command.
+// Run shows the picker; Enter resumes the chosen session and the handoff action
+// starts another installed agent with the selected session as its first prompt.
 // When global, it lists the most-recent sessions across every repo instead of
 // just target, and rows show the repo rather than the session id.
 func Run(target string, num int, all bool, agent string, global bool) error {
@@ -574,7 +698,13 @@ func Run(target string, num int, all bool, agent string, global bool) error {
 		return err
 	}
 	fm, ok := final.(model)
-	if !ok || fm.chosen == nil {
+	if !ok {
+		return nil
+	}
+	if fm.handoff != nil && fm.handoffTool != "" {
+		return agents.Handoff(*fm.handoff, fm.handoffTool)
+	}
+	if fm.chosen == nil {
 		return nil
 	}
 	argv := agents.ResumeArgv(*fm.chosen)
