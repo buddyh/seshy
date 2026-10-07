@@ -37,6 +37,14 @@ func TestMCPDiscoveryToolErrorsAndUIResource(t *testing.T) {
 		if tool.(map[string]any)["annotations"].(map[string]any)["readOnlyHint"] != true {
 			t.Fatal("missing read-only annotation")
 		}
+		for _, field := range []string{"inputSchema", "outputSchema"} {
+			schema := tool.(map[string]any)[field].(map[string]any)
+			if required, exists := schema["required"]; exists {
+				if _, valid := required.([]any); !valid {
+					t.Fatalf("%s %s: required must be an array, never null", tool.(map[string]any)["name"], field)
+				}
+			}
+		}
 	}
 	json.Unmarshal([]byte(lines[2]), &response)
 	result := response["result"].(map[string]any)
