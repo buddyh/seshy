@@ -1,0 +1,10 @@
+{
+  "name": "seshy-local",
+  "interface": {"displayName": "Seshy local"},
+  "plugins": [{
+    "name": "seshy",
+    "source": {"source": "local", "path": "./seshy"},
+    "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
+    "category": "Productivity"
+  }]
+}
