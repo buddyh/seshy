@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -76,6 +77,66 @@ func ResumeArgv(s Session) []string {
 		return []string{"droid", "--resume", s.ID}
 	}
 	return nil
+}
+
+// HandoffPrompt returns a ready-to-paste prompt for continuing this session
+// in a different coding agent. It names the source transcript, but tells the
+// receiving agent to verify the workspace instead of trusting the transcript.
+func HandoffPrompt(s Session) string {
+	return strings.TrimSpace(fmt.Sprintf(`Get up to speed on this %s session and continue its work.
+
+Session ID: %s
+Transcript: %s
+Working directory: %s
+
+First recover the prior session's original goal, decisions, what actually landed, and the unresolved next step from the transcript. Then inspect the current workspace and treat it as the source of truth. Continue the unresolved work and verify the result.`, Label(s.Tool), s.ID, s.Path, s.Dir))
+}
+
+// HandoffArgv returns the command to start another coding agent with the
+// handoff prompt as its first interactive message.
+func HandoffArgv(tool string, s Session) []string {
+	prompt := HandoffPrompt(s)
+	switch tool {
+	case "claude", "codex", "grok", "pi", "droid":
+		return []string{tool, prompt}
+	case "opencode":
+		return []string{"opencode", "--prompt", prompt}
+	case "agy":
+		return []string{"agy", "--prompt-interactive", prompt}
+	}
+	return nil
+}
+
+// AvailableHandoffTargets returns installed supported agents other than the
+// source agent, in the same stable order used by the session registry.
+func AvailableHandoffTargets(source string) []string {
+	var out []string
+	for _, tool := range []string{"claude", "codex", "grok", "pi", "opencode", "agy", "droid"} {
+		if tool == source {
+			continue
+		}
+		if _, err := exec.LookPath(tool); err == nil {
+			out = append(out, tool)
+		}
+	}
+	return out
+}
+
+// Handoff starts another coding agent in the source session's directory with
+// a prompt that reconstructs the source session before continuing its work.
+func Handoff(s Session, target string) error {
+	argv := HandoffArgv(target, s)
+	if len(argv) == 0 {
+		return fmt.Errorf("no handoff command for %s", target)
+	}
+	bin, err := exec.LookPath(argv[0])
+	if err != nil {
+		return fmt.Errorf("%s not found on PATH", argv[0])
+	}
+	if s.Dir != "" {
+		_ = os.Chdir(s.Dir)
+	}
+	return syscall.Exec(bin, argv, os.Environ())
 }
 
 // Resume replaces the current process with the agent's native resume command

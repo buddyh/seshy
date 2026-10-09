@@ -23,3 +23,13 @@ test('scope: "3" leaves everything untouched', () => {
   assert.equal(o.model, '');
   assert.equal(o.since, 0);
 });
+
+test('scope: fable-week is flagged autoFable (drives the empty fallback)', () => {
+  assert.equal(applyScope({ model: '', since: 0, window: 'all' }, '1').autoFable, true);
+  assert.equal(applyScope({ model: '', since: 0, window: 'all' }, '').autoFable, true);
+});
+
+test('scope: 30-day and all-time are not autoFable', () => {
+  assert.notEqual(applyScope({ model: '', since: 0, window: 'all' }, '2').autoFable, true);
+  assert.notEqual(applyScope({ model: '', since: 0, window: 'all' }, '3').autoFable, true);
+});

@@ -100,6 +100,9 @@ export function applyScope(o, choice, now = Date.now()) {
   else if (c !== '3') {
     o.model = 'fable';
     o.since = Date.parse(FABLE_SINCE);
+    // Auto-picked (not an explicit --model): if the Fable window is empty we
+    // fall back to an all-time card rather than dead-ending the user.
+    o.autoFable = true;
   }
   return o;
 }
@@ -145,9 +148,8 @@ export async function main() {
     await askScope(o, log);
   }
 
-  let scanIdx = 0;
   let lastPct = -1;
-  const report = await collect({
+  const run = () => collect({
     agent: o.agent,
     since: o.since,
     model: o.model,
@@ -164,7 +166,19 @@ export async function main() {
       }
     },
   });
+
+  let report = await run();
   if (!o.json) log('\r' + ' '.repeat(100) + '\r');
+
+  // The Fable-week default is auto-picked; if it's empty (most non-Fable
+  // users), give them an all-time card instead of a dead end — a card they
+  // might post beats a "no sessions" wall.
+  if (report.totals.sessions === 0 && o.autoFable) {
+    log('\n  ' + dim('no Fable 5 sessions in Jul 1–7 — here\'s your all-time card instead.') + '\n');
+    o.model = ''; o.since = 0; o.window = 'all'; lastPct = -1;
+    report = await run();
+    if (!o.json) log('\r' + ' '.repeat(100) + '\r');
+  }
 
   // Edge: nothing found at all.
   if (report.totals.sessions === 0) {

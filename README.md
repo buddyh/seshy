@@ -80,6 +80,8 @@ Run `seshy` in a repo to open the interactive picker:
 | `↑` / `↓` | move |
 | `/` or type | fuzzy-filter (by prompt, agent, or repo) |
 | `p` | toggle preview pane (first prompt · last message · resume command) |
+| `y` | copy the selected session's full ID |
+| `a` | choose another installed agent and launch it with a handoff prompt |
 | `h` | hide/show headless & automated runs (`claude -p` / SDK, `codex exec`); persists to config |
 | `↵` | resume the selected session in its native agent |
 | `q` | quit |
@@ -226,6 +228,12 @@ not a lossy summary.
 
 Everything runs locally against the session files the agents already write. seshy reads
 them read-only; it never modifies your history.
+
+The picker also supports cross-agent handoff without pretending that one agent can natively
+resume another agent's conversation. Press `a`, choose an installed target, and seshy opens it
+in the source session's working directory with a prompt containing the source agent, session ID,
+transcript path, and working directory. The receiving agent is told to recover the prior context
+and verify the current workspace before continuing. Press `y` when you only need the raw session ID.
 
 ## Claude Code skills
 
