@@ -263,7 +263,7 @@ go build -o seshy .
 ./seshy --help
 ```
 
-Requires Go 1.25+. The codebase lives in `internal/` — `agents/` (per-agent collectors and
+Requires Go 1.27.3+. The codebase lives in `internal/` — `agents/` (per-agent collectors and
 the resume model), `render/` (table/JSON/summary output), `tui/` (the Bubble Tea picker),
 `retention/` (per-agent stores, policies, and the settings writers), `store/` (shared read
 helpers), and `config/` (settings). `go test ./...` runs the suite; the JSON contract for
