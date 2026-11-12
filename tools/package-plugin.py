@@ -2,6 +2,8 @@
 """Validate portable plugin files and archive only the self-contained package."""
 from __future__ import annotations
 import json
+import os
+import re
 import sys
 import zipfile
 from pathlib import Path
@@ -16,8 +18,25 @@ def require(condition: bool, message: str) -> None:
 def package(output: Path) -> Path:
     """Validate contained resources and write a ZIP beside the plugin directory."""
     root = output.resolve() / "seshy"
+    require(not root.is_symlink(), "Plugin directory cannot be a symlink")
+    entries = sorted(root.rglob("*"))
+    require(not any(p.is_symlink() for p in entries), "Symlinks cannot be packaged")
+    files = [p for p in entries if p.is_file()]
+    required = {"plugin.json", "mcp.json", "run.sh", "README.md", "LICENSE",
+                "assets/icon.svg", "skills/recover-session/SKILL.md"}
+    runtimes = {f"bin/seshy-{platform}-{arch}" for platform in ("darwin", "linux")
+                for arch in ("arm64", "amd64")}
+    names = {p.relative_to(root).as_posix() for p in files}
+    require(required <= names, f"Missing package files: {sorted(required - names)}")
+    require(names <= required | runtimes, f"Unexpected package files: {sorted(names - required - runtimes)}")
+    require(bool(names & runtimes), "Build the runtime before packaging")
+    for name in {"run.sh"} | (names & runtimes):
+        require(os.access(root / name, os.X_OK), f"Package entrypoint is not executable: {name}")
     manifest = json.loads((root / "plugin.json").read_text())
     require(manifest["name"] == root.name, "Manifest name must match directory")
+    require(isinstance(manifest.get("version"), str) and
+            re.fullmatch(r"\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?", manifest["version"]) is not None,
+            "Manifest version must be a portable semantic version")
     interface = manifest["extensions"]["com.openai"]["interface"]
     require(len(interface["shortDescription"]) <= 30, "Subtitle exceeds 30 characters")
     mcp = json.loads((root / "mcp.json").read_text())
@@ -28,13 +47,6 @@ def package(output: Path) -> Path:
         require(asset.is_relative_to(root) and asset.is_file(), f"Missing contained {field}")
     skill = (root / "skills/recover-session/SKILL.md").read_text()
     require(skill.startswith("---\nname: recover-session\ndescription:"), "Skill frontmatter missing")
-    require(any((root / "bin").glob("seshy-*")), "Build the runtime before packaging")
-    files = sorted(p for p in root.rglob("*") if p.is_file())
-    require(not any(p.is_symlink() for p in root.rglob("*")), "Symlinks cannot be packaged")
-    allowed = {"plugin.json", "mcp.json", "run.sh", "README.md", "LICENSE"}
-    for file in files:
-        relative = file.relative_to(root)
-        require(relative.parts[0] in allowed | {"assets", "skills", "bin"}, f"Unexpected file: {relative}")
     archive = output.resolve() / f"seshy-{manifest['version']}.zip"
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as target:
         for file in files:
