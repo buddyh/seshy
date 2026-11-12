@@ -19,7 +19,7 @@ import (
 	"github.com/buddyh/seshy/internal/store"
 )
 
-const Version = "0.1.1"
+const Version = "0.1.2"
 
 var storeDirs = map[string]string{
 	"claude": ".claude/projects", "codex": ".codex/sessions", "grok": ".grok/sessions",

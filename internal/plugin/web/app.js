@@ -54,7 +54,7 @@ class HostBridge {
   }
   async connect() {
     const result = await this.request("ui/initialize", {
-      appInfo: { name: "Seshy", version: "0.1.1" },
+      appInfo: { name: "Seshy", version: "0.1.2" },
       appCapabilities: { availableDisplayModes: ["inline", "fullscreen", "pip"] },
       protocolVersion: "2026-01-26",
     });
