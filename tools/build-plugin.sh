@@ -1,6 +1,8 @@
 #!/bin/sh
 # Build a self-contained plugin with installed Go dependencies; never installs.
 set -eu
+# Fail if the required toolchain or modules are missing; never download either.
+export GOTOOLCHAIN=local GOPROXY=off
 repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 output_dir=${1:-"$repo_dir/dist"}
 go_bin=${SESHY_GO:-go}
@@ -15,6 +17,6 @@ cp "$repo_dir/plugins/seshy/plugin.json" "$repo_dir/plugins/seshy/mcp.json" "$re
 cp -R "$repo_dir/plugins/seshy/skills/." "$output_dir/seshy/skills/"
 cp -R "$repo_dir/plugins/seshy/assets/." "$output_dir/seshy/assets/"
 cd "$repo_dir"
-GOPROXY=off CGO_ENABLED=0 GOOS="$platform" GOARCH="$arch" "$go_bin" build -trimpath -ldflags='-s -w' -o "$output_dir/seshy/bin/seshy-$platform-$arch" .
+CGO_ENABLED=0 GOOS="$platform" GOARCH="$arch" "$go_bin" build -trimpath -ldflags='-s -w' -o "$output_dir/seshy/bin/seshy-$platform-$arch" .
 chmod 755 "$output_dir/seshy/run.sh" "$output_dir/seshy/bin/seshy-$platform-$arch"
 python3 "$repo_dir/tools/package-plugin.py" "$output_dir"
