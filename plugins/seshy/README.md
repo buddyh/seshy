@@ -4,13 +4,13 @@ A local ChatGPT / Codex plugin for finding earlier coding-agent work, reading ci
 
 ## Build with installed tooling
 
-Go 1.25.8 or newer and Seshy's existing Go dependencies must already be available. The build disables dependency fetching; it does not install packages.
+Go 1.27.3 or newer and Seshy's existing Go dependencies must already be available. The build disables toolchain and dependency fetching; it does not install packages. A missing cache is a build blocker, not permission to fetch dependencies.
 
 ```sh
 tools/build-plugin.sh
 ```
 
-The package is `dist/seshy/`; the archive is beside it. The launcher uses a bundled native binary, without a Go or Node dependency on the recipient's machine. Build on the target macOS/Linux ARM64/AMD64 host, or set `GOOS` and `GOARCH` when building to add that platform's binary. Preserve existing binaries when adding a platform. Windows packaging is unsupported by this launcher.
+The package is `dist/seshy/`; the archive is beside it. The launcher uses a bundled native binary, without a Go or Node dependency on the recipient's machine. Build on the target macOS/Linux ARM64/AMD64 host, or set `GOOS` and `GOARCH` when building to add that platform's binary. Use a new output directory for each source revision; all included platform binaries must come from that revision. The packager rejects files outside the exact metadata, skill, icon and supported-runtime paths. Windows packaging is unsupported by this launcher.
 
 The view is embedded in the binary and has no external scripts, fonts or network calls. `SESHY_HOME` may be set by the local process environment to an explicit home containing synthetic or relocated supported stores; otherwise it uses the user's home directory. This is a local process configuration, never a tool argument. Do not point it at someone else's history.
 
@@ -49,7 +49,8 @@ Search cursors bind the index snapshot, scope and partially scanned source revis
 ```sh
 go test ./...
 go vet ./...
-node --test internal/plugin/web/app.test.cjs
+node --test internal/plugin/web/*.test.cjs
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p 'test_*.py'
 python3 tools/smoke-plugin.py dist/seshy
 ```
 

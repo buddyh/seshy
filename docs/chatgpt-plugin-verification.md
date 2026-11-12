@@ -2,7 +2,17 @@
 
 ## Current evidence
 
-October 7, 2026: local implementation and a macOS ARM64 archive exist on `feat/chatgpt-plugin`. No private account upload, installed ChatGPT tool call, credential creation, public hosting or submission has been verified.
+November 12, 2026: source candidate **0.1.2** integrates main's Go 1.27.3 and dependency security baseline. It fixes Recent-view coverage, invalidates prepared recovery before source refresh, and restricts package contents to reviewed paths. A fresh macOS ARM64 binary and ZIP were built offline with the installed toolchain and locally available modules. An initial missing-cache check failed, then the local cache became available; no dependency or toolchain fetching was enabled by this recovery.
+
+Full Go tests and vet pass, as do agents/plugin race tests, eight Node tests, and five Python packaging tests. Both Recent-view regressions fail against the original reader. The new packaged runtime passes synthetic search, sourced paging, Recent coverage, handoff, errors and embedded-resource smoke checks. All six tool input/output schemas and fixture results validate. Source and built manifests validate against the live Agent Plugins 1.0.0 schemas; those schemas do not validate vendor extension contents. CI now includes UI, package-content and packaged-runtime checks.
+
+The local registry currently reports `seshy@seshy-local` **0.1.1** installed and enabled. Its unchanged cached runtime passes an 11-request synthetic smoke check. This is evidence for the installed 0.1.1 runtime only. A later October 7 UI session also asked to open the native panel, but the opener was unavailable in that chat; no native rendering or current-chat recovery delivery was established. Source recovery does not authorize replacing the installed plugin.
+
+The source repository is public; this recovery's private-publication authorization does not permit pushing there. A local review patch and source bundle are retained separately from the historical package. No public release, site deploy, marketplace submission, tunnel setup or account changes were performed.
+
+## Historical fixture evidence
+
+October 7, 2026: local implementation and a macOS ARM64 archive were created on `feat/chatgpt-plugin`. The results below are historical receipts, not reruns of source candidate 0.1.2.
 
 | Boundary | Evidence | Result |
 |---|---|---|
@@ -37,13 +47,14 @@ After fixture verification, switching the tunnel runtime to real local coding-ag
 
 ## Reproducible local checks
 
-Use an already installed Go 1.25.8+ toolchain and cached dependencies. The build refuses network dependency fetching.
+Use an already installed Go 1.27.3+ toolchain and cached dependencies. Set `GOTOOLCHAIN=local GOPROXY=off` for the Go checks when downloads are not authorized. The package build also refuses toolchain and dependency fetching.
 
 ```sh
 go test ./...
 go vet ./...
 go test -race ./internal/agents ./internal/plugin
-node --test internal/plugin/web/app.test.cjs
+node --test internal/plugin/web/*.test.cjs
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p 'test_*.py'
 tools/build-plugin.sh
 python3 tools/smoke-plugin.py dist/seshy
 ```

@@ -254,6 +254,17 @@ cp -r .claude/skills/seshy .claude/skills/conversation-search ~/.claude/skills/
 
 Or, when working inside a clone of this repo, Claude Code discovers them automatically.
 
+## Local conversation recovery plugin
+
+The [Seshy plugin](plugins/seshy/README.md) adds local MCP tools, a session library UI,
+and a recovery skill for ChatGPT desktop Work / Codex. It searches coding-agent history,
+returns sourced excerpts, and prepares context for the current chat. Native resume commands
+are displayed for the user to run. The plugin does not launch agents or modify history.
+
+Build it with `tools/build-plugin.sh` using the declared Go toolchain and cached dependencies.
+See [verification boundaries](docs/chatgpt-plugin-verification.md) before treating source,
+an archive, an installed plugin, or native host behavior as the same result.
+
 ## Build from source
 
 ```sh
