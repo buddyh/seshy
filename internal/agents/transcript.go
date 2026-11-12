@@ -153,6 +153,7 @@ func ReadJSONLTranscript(path string, o TranscriptOptions) (TranscriptPage, erro
 					for len(p.Messages) > o.Limit || chars > o.MaxChars {
 						chars -= len([]rune(p.Messages[0].Text))
 						p.Messages = p.Messages[1:]
+						p.Warnings = appendOnce(p.Warnings, "Recent view omits earlier messages to fit the output budget.")
 					}
 				} else if len(p.Messages) >= o.Limit || chars >= o.MaxChars {
 					if pos < st.Size() {

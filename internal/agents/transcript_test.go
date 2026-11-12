@@ -145,6 +145,9 @@ func TestRecentAndTornScanBudgets(t *testing.T) {
 	if err != nil || len(p.Messages) != 1 || p.Messages[0].Text != "last" {
 		t.Fatalf("recent: %+v %v", p, err)
 	}
+	if p.Complete || !strings.Contains(strings.Join(p.Warnings, " "), "omits earlier messages") {
+		t.Fatalf("recent view silently omitted earlier messages: %+v", p)
+	}
 	o.Tail = false
 	o.MaxBytes = 100
 	p, err = ReadJSONLTranscript(path, o)
@@ -154,5 +157,21 @@ func TestRecentAndTornScanBudgets(t *testing.T) {
 	o.Offset = *p.NextOffset
 	if _, err = ReadJSONLTranscript(path, o); err == nil {
 		t.Fatal("nonprogressing source budget must fail clearly")
+	}
+}
+
+func TestRecentCoverageReflectsReturnedMessages(t *testing.T) {
+	path := transcriptFile(t, textRecord("user", strings.Repeat("a", 200)), textRecord("assistant", strings.Repeat("b", 200)))
+	o := bounds()
+	o.Tail = true
+	o.MaxChars = 256
+	p, err := ReadJSONLTranscript(path, o)
+	if err != nil || len(p.Messages) != 1 || p.Complete || len(p.Warnings) == 0 {
+		t.Fatalf("character budget lost coverage: %+v %v", p, err)
+	}
+	o.MaxChars = 64000
+	p, err = ReadJSONLTranscript(path, o)
+	if err != nil || len(p.Messages) != 2 || !p.Complete || len(p.Warnings) != 0 {
+		t.Fatalf("complete recent source should stay complete: %+v %v", p, err)
 	}
 }
