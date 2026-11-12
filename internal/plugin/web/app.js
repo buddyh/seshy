@@ -187,6 +187,7 @@ if (typeof document !== "undefined") {
     await read(false, false);
   }
   async function read(recent = false, append = false) {
+    resetRecovery();
     const result = await bridge.tool("read_session", {
       session_key: selected.session_key, limit: 20, max_chars: 24000, recent,
       ...(append ? {cursor: pageCursor} : {}),
