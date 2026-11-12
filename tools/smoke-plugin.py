@@ -14,6 +14,7 @@ from typing import Any
 
 def smoke(package: Path) -> dict[str, Any]:
     """Check the actual launcher, MCP workflow and source immutability."""
+    version = json.loads((package / "plugin.json").read_text())["version"]
     with tempfile.TemporaryDirectory(prefix="seshy-plugin-smoke-") as temporary:
         home = Path(temporary)
         source = home / ".codex/sessions/2026/10/07/rollout-fixture.jsonl"
@@ -59,11 +60,13 @@ def smoke(package: Path) -> dict[str, Any]:
         try:
             init = request("initialize", {"protocolVersion": "2025-11-25", "capabilities": {}, "clientInfo": {"name": "seshy-smoke", "version": "1"}})
             assert init["serverInfo"]["name"] == "seshy"
+            assert init["serverInfo"]["version"] == version
             definitions = request("tools/list", {})["tools"]
             assert {item["name"] for item in definitions} == {"list_sessions", "search_sessions", "read_session", "prepare_handoff", "doctor", "open_seshy"}
             assert all(item["annotations"]["readOnlyHint"] for item in definitions)
             doctor = tool("doctor", {})
             assert doctor["home"] == str(home) and not doctor["history_mutations"]
+            assert doctor["version"] == version
             listed = tool("list_sessions", {"directory": "/fixture/project"})
             assert listed["sessions"][0]["session_key"] == "codex:fixture"
             searched = tool("search_sessions", {"query": "native collectors", "directory": "/fixture/project"})
@@ -73,6 +76,9 @@ def smoke(package: Path) -> dict[str, Any]:
             assert opening["page"]["messages"][0]["byte_offset"] > 0
             following = tool("read_session", {"session_key": "codex:fixture", "limit": 1, "cursor": opening["next_cursor"]})
             assert following["page"]["messages"][0]["text"] == records[2]["content"]
+            recent = tool("read_session", {"session_key": "codex:fixture", "limit": 1, "recent": True})
+            assert recent["page"]["messages"][0]["text"] == records[-1]["content"]
+            assert recent["page"]["complete"] is False and recent["page"]["warnings"]
             handoff = tool("prepare_handoff", {"session_key": "codex:fixture"})
             assert handoff["executed"] is False and handoff["untrusted_source"] is True
             for arguments in ({"session_key": "/etc/passwd"}, {"session_key": "codex:fixture", "unexpected": True}):
