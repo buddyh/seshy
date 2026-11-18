@@ -136,6 +136,11 @@ func ReadOpenCodeTranscript(s Session, o TranscriptOptions) (TranscriptPage, err
 			text = matched
 		}
 		remaining := o.MaxChars - chars
+		if o.Tail {
+			// Recent view keeps the newest messages: clip each one, then drop the
+			// oldest until the selection fits the budget.
+			remaining = min(o.MaxChars, 6000)
+		}
 		if remaining <= 0 {
 			break
 		}
@@ -147,6 +152,13 @@ func ReadOpenCodeTranscript(s Session, o TranscriptOptions) (TranscriptPage, err
 		}
 		p.Messages = append(p.Messages, TranscriptMessage{Role: role, Text: text, MessageID: r.id, Timestamp: time.UnixMilli(r.ts).UTC().Format(time.RFC3339), Truncated: clipped})
 		chars += len([]rune(text))
+		if o.Tail {
+			for len(p.Messages) > 1 && chars > o.MaxChars {
+				chars -= len([]rune(p.Messages[0].Text))
+				p.Messages = p.Messages[1:]
+				p.Warnings = appendOnce(p.Warnings, "Recent view omits earlier messages to fit the output budget.")
+			}
+		}
 		processed++
 	}
 	if next := start + processed; next < total {
