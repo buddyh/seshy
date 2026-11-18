@@ -1,0 +1,22 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "seshy",
+  "version": "0.1.2",
+  "description": "Find and recover earlier work across local coding agents with sourced conversation excerpts.",
+  "author": {"name": "Buddy"},
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Seshy",
+        "shortDescription": "Find where you left off",
+        "longDescription": "Search local Claude, Codex, Grok, pi, OpenCode and Droid conversations, inspect source excerpts, and prepare recovery in your current chat. Antigravity task context is labeled separately. Native resume commands are displayed for you to run. History stays read-only.",
+        "developerName": "Buddy",
+        "category": "Productivity",
+        "capabilities": ["Interactive"],
+        "logo": "./assets/icon.svg",
+        "composerIcon": "./assets/icon.svg",
+        "defaultPrompt": "Find the earlier session about this project and get this chat up to speed."
+      }
+    }
+  }
+}

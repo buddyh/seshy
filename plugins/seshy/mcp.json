@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "seshy": {
+      "type": "stdio",
+      "command": "/bin/sh",
+      "args": ["${PLUGIN_ROOT}/run.sh"],
+      "cwd": "${PLUGIN_ROOT}"
+    }
+  }
+}
